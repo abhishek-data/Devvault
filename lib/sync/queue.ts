@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { StorageService } from "../db/storage";
 
 interface QueueItem {
     noteId: string;
@@ -26,14 +27,24 @@ class SyncQueue {
             const item = this.queue.shift()!;
 
             try {
+                // Fetch the full note from IndexedDB
+                const note = await StorageService.getNoteById(item.noteId);
+                if (!note) continue;
+
+                // Determine action based on sync status
+                const action = note.githubSha ? "update" : "create";
+
                 const res = await fetch("/api/github/file", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ noteId: item.noteId }),
+                    body: JSON.stringify({ note, action }),
                 });
 
                 if (res.ok) {
-                    // Success — the API route handles updating sync status
+                    const data = await res.json();
+                    if (data.sha) {
+                        await StorageService.updateSyncStatus(item.noteId, "synced", data.sha);
+                    }
                 } else if (res.status === 429) {
                     // Rate limited
                     this.queue.unshift(item);
