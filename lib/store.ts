@@ -40,6 +40,8 @@ interface DevVaultStore {
     theme: "light" | "dark";
     setTheme: (theme: "light" | "dark") => void;
     toggleTheme: () => void;
+    syncIntervalMinutes: number;
+    setSyncIntervalMinutes: (val: number) => void;
 }
 
 export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
@@ -118,5 +120,10 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
         const next = theme === "dark" ? "light" : "dark";
         localStorage.setItem("devvault-theme", next);
         set({ theme: next });
+    },
+    syncIntervalMinutes: typeof window !== "undefined" ? parseInt(localStorage.getItem("devvault-sync-interval") || "30", 10) : 30,
+    setSyncIntervalMinutes: (val) => {
+        localStorage.setItem("devvault-sync-interval", String(val));
+        set({ syncIntervalMinutes: val });
     },
 }));

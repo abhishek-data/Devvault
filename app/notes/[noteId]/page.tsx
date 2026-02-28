@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import { useDevVaultStore } from "@/lib/store";
 import { StorageService } from "@/lib/db/storage";
 import { BlockEditor } from "@/components/editor/BlockEditor";
-import { syncQueue } from "@/lib/sync/queue";
 import type { Note } from "@/lib/types";
 import { X, Loader2 } from "lucide-react";
 
@@ -62,10 +61,6 @@ export default function NotePage() {
         await StorageService.saveNote(updated);
         upsertNote(updated);
         rebuildSearchIndex();
-
-        if (isGitHubConnected) {
-            syncQueue.add(updated.id);
-        }
     };
 
     const handleAddTag = (tag: string) => {
@@ -84,10 +79,6 @@ export default function NotePage() {
         StorageService.saveNote(updated);
         upsertNote(updated);
         rebuildSearchIndex();
-
-        if (isGitHubConnected) {
-            syncQueue.add(updated.id);
-        }
     };
 
     const handleRemoveTag = (tag: string) => {
@@ -103,10 +94,6 @@ export default function NotePage() {
         StorageService.saveNote(updated);
         upsertNote(updated);
         rebuildSearchIndex();
-
-        if (isGitHubConnected) {
-            syncQueue.add(updated.id);
-        }
     };
 
     const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

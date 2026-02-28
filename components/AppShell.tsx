@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDevVaultStore } from "@/lib/store";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ConflictModal } from "@/components/sync/ConflictModal";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { StorageService } from "@/lib/db/storage";
 import type { ReactNode } from "react";
 
 export function AppShell({ children }: { children: ReactNode }) {
-    const { sidebarCollapsed, theme } = useDevVaultStore();
+    const { sidebarCollapsed, theme, syncIntervalMinutes, isGitHubConnected } =
+        useDevVaultStore();
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Apply theme class to <html> element
     useEffect(() => {
@@ -23,6 +26,49 @@ export function AppShell({ children }: { children: ReactNode }) {
             html.classList.add("light");
         }
     }, [theme]);
+
+    // Interval-based sync
+    useEffect(() => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+
+        if (syncIntervalMinutes > 0 && isGitHubConnected) {
+            const ms = syncIntervalMinutes * 60 * 1000;
+
+            intervalRef.current = setInterval(async () => {
+                try {
+                    const pending = await StorageService.getNotesPendingSync();
+                    if (pending.length === 0) return;
+
+                    for (const note of pending) {
+                        const action = note.githubSha ? "update" : "create";
+                        const res = await fetch("/api/github/file", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ note, action }),
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.sha) {
+                                await StorageService.updateSyncStatus(note.id, "synced", data.sha);
+                            }
+                        }
+                    }
+                    toast.success(`Auto-synced ${pending.length} note${pending.length > 1 ? "s" : ""}`);
+                } catch {
+                    // Silent fail — will retry next interval
+                }
+            }, ms);
+        }
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [syncIntervalMinutes, isGitHubConnected]);
 
     return (
         <>

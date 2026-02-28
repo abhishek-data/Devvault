@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useDevVaultStore } from "@/lib/store";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { X, Github, HardDrive, Trash2, RefreshCw } from "lucide-react";
+import { X, Github, HardDrive, Trash2, RefreshCw, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { StorageService } from "@/lib/db/storage";
 
@@ -12,9 +12,24 @@ interface SettingsPanelProps {
     onOpenChange: (open: boolean) => void;
 }
 
+const INTERVAL_OPTIONS = [
+    { label: "5 minutes", value: 5 },
+    { label: "15 minutes", value: 15 },
+    { label: "30 minutes", value: 30 },
+    { label: "1 hour", value: 60 },
+    { label: "2 hours", value: 120 },
+    { label: "Manual only", value: 0 },
+];
+
 export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
-    const { isGitHubConnected, setGitHubConnected, setNotes, setSyncStatus } =
-        useDevVaultStore();
+    const {
+        isGitHubConnected,
+        setGitHubConnected,
+        setNotes,
+        setSyncStatus,
+        syncIntervalMinutes,
+        setSyncIntervalMinutes,
+    } = useDevVaultStore();
     const { data: session } = useSession();
     const [storageEstimate, setStorageEstimate] = useState<string>("Calculating...");
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -38,8 +53,26 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
     const handleSync = async () => {
         setSyncStatus("syncing");
         try {
-            const res = await fetch("/api/github/pull");
-            if (res.ok) {
+            // Push pending notes
+            const pendingNotes = await StorageService.getNotesPendingSync();
+            for (const note of pendingNotes) {
+                const action = note.githubSha ? "update" : "create";
+                const res = await fetch("/api/github/file", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ note, action }),
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.sha) {
+                        await StorageService.updateSyncStatus(note.id, "synced", data.sha);
+                    }
+                }
+            }
+
+            // Pull from GitHub
+            const pullRes = await fetch("/api/github/pull");
+            if (pullRes.ok) {
                 toast.success("Sync complete");
             } else {
                 toast.error("Sync failed");
@@ -73,20 +106,20 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                 className="absolute inset-0 bg-black/40"
                 onClick={() => onOpenChange(false)}
             />
-            <div className="absolute right-0 top-0 bottom-0 w-[380px] bg-zinc-900 border-l border-zinc-800 shadow-2xl overflow-y-auto">
-                <div className="flex items-center justify-between p-4 border-b border-zinc-800">
-                    <h2 className="text-lg font-semibold text-zinc-100">Settings</h2>
+            <div className="absolute right-0 top-0 bottom-0 w-[380px] bg-white dark:bg-zinc-900 border-l border-zinc-200 dark:border-zinc-800 shadow-2xl overflow-y-auto">
+                <div className="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-800">
+                    <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Settings</h2>
                     <button
                         onClick={() => onOpenChange(false)}
-                        className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200"
+                        className="p-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
                     >
                         <X className="h-5 w-5" />
                     </button>
                 </div>
 
                 {/* GitHub Connection */}
-                <div className="p-4 border-b border-zinc-800">
-                    <h3 className="text-sm font-medium text-zinc-300 mb-3 flex items-center gap-2">
+                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+                    <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-2">
                         <Github className="h-4 w-4" />
                         GitHub Connection
                     </h3>
@@ -101,12 +134,12 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                                     />
                                 )}
                                 <div>
-                                    <p className="text-sm text-zinc-200">{session.user?.name}</p>
+                                    <p className="text-sm text-zinc-800 dark:text-zinc-200">{session.user?.name}</p>
                                     <a
                                         href={`https://github.com/${session.user?.name}/devvault-notes`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-xs text-blue-400 hover:underline"
+                                        className="text-xs text-blue-500 dark:text-blue-400 hover:underline"
                                     >
                                         devvault-notes repo
                                     </a>
@@ -115,7 +148,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleSync}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 transition-colors"
                                 >
                                     <RefreshCw className="h-3.5 w-3.5" />
                                     Sync now
@@ -125,7 +158,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                                         signOut();
                                         setGitHubConnected(false);
                                     }}
-                                    className="px-3 py-1.5 rounded-md text-sm border border-zinc-700 hover:bg-zinc-800 text-zinc-400 transition-colors"
+                                    className="px-3 py-1.5 rounded-md text-sm border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 transition-colors"
                                 >
                                     Disconnect
                                 </button>
@@ -134,7 +167,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                     ) : (
                         <button
                             onClick={() => signIn("github")}
-                            className="flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm transition-colors"
+                            className="flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm transition-colors"
                         >
                             <Github className="h-4 w-4" />
                             Connect GitHub
@@ -142,30 +175,56 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                     )}
                 </div>
 
+                {/* Sync Interval */}
+                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+                    <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        Auto-Sync Interval
+                    </h3>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-3">
+                        How often to automatically push notes to GitHub. Manual save (⌘S) always saves locally.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                        {INTERVAL_OPTIONS.map((opt) => (
+                            <button
+                                key={opt.value}
+                                onClick={() => {
+                                    setSyncIntervalMinutes(opt.value);
+                                    toast.success(
+                                        opt.value === 0
+                                            ? "Auto-sync disabled"
+                                            : `Auto-sync set to every ${opt.label}`
+                                    );
+                                }}
+                                className={`px-3 py-1.5 rounded-md text-sm transition-colors ${syncIntervalMinutes === opt.value
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                                    }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Storage */}
-                <div className="p-4 border-b border-zinc-800">
-                    <h3 className="text-sm font-medium text-zinc-300 mb-3 flex items-center gap-2">
+                <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
+                    <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3 flex items-center gap-2">
                         <HardDrive className="h-4 w-4" />
                         Storage
                     </h3>
-                    <p className="text-sm text-zinc-400">{storageEstimate}</p>
-                    <button
-                        disabled
-                        className="mt-3 px-3 py-1.5 rounded-md text-sm bg-zinc-800 text-zinc-500 cursor-not-allowed"
-                    >
-                        Export all notes as ZIP — coming soon
-                    </button>
+                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{storageEstimate}</p>
                 </div>
 
                 {/* Danger Zone */}
                 <div className="p-4">
-                    <h3 className="text-sm font-medium text-red-400 mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-medium text-red-500 dark:text-red-400 mb-3 flex items-center gap-2">
                         <Trash2 className="h-4 w-4" />
                         Danger Zone
                     </h3>
                     {showDeleteConfirm ? (
                         <div className="space-y-2">
-                            <p className="text-sm text-zinc-400">
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400">
                                 Are you sure? This will permanently delete all local notes.
                             </p>
                             <div className="flex gap-2">
@@ -177,7 +236,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                                 </button>
                                 <button
                                     onClick={() => setShowDeleteConfirm(false)}
-                                    className="px-3 py-1.5 rounded-md text-sm border border-zinc-700 hover:bg-zinc-800 text-zinc-400 transition-colors"
+                                    className="px-3 py-1.5 rounded-md text-sm border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -186,7 +245,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                     ) : (
                         <button
                             onClick={() => setShowDeleteConfirm(true)}
-                            className="px-3 py-1.5 rounded-md text-sm border border-red-800 hover:bg-red-900/30 text-red-400 transition-colors"
+                            className="px-3 py-1.5 rounded-md text-sm border border-red-300 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-red-500 dark:text-red-400 transition-colors"
                         >
                             Delete all local notes
                         </button>

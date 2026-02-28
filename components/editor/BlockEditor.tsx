@@ -7,7 +7,6 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import { common, createLowlight } from "lowlight";
 import { useDevVaultStore } from "@/lib/store";
 import { StorageService } from "@/lib/db/storage";
-import { syncQueue } from "@/lib/sync/queue";
 import { AddBlockMenu } from "./AddBlockMenu";
 import type { Note, Block } from "@/lib/types";
 import { v4 as uuidv4 } from "uuid";
@@ -92,10 +91,6 @@ export function BlockEditor({ note, onSave }: BlockEditorProps) {
                 setDirty(false);
                 noteRef.current = updated;
                 onSave(updated);
-
-                if (isGitHubConnected) {
-                    syncQueue.add(updated.id);
-                }
             } catch {
                 toast.error("Failed to save note locally. Try refreshing.");
             }
