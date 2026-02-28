@@ -32,6 +32,14 @@ interface DevVaultStore {
     // Dirty state
     isDirty: boolean;
     setDirty: (val: boolean) => void;
+
+    // UI
+    sidebarCollapsed: boolean;
+    setSidebarCollapsed: (val: boolean) => void;
+    toggleSidebar: () => void;
+    theme: "light" | "dark";
+    setTheme: (theme: "light" | "dark") => void;
+    toggleTheme: () => void;
 }
 
 export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
@@ -87,4 +95,28 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
     // Dirty state
     isDirty: false,
     setDirty: (val) => set({ isDirty: val }),
+
+    // UI
+    sidebarCollapsed: typeof window !== "undefined" ? localStorage.getItem("devvault-sidebar") === "collapsed" : false,
+    setSidebarCollapsed: (val) => {
+        localStorage.setItem("devvault-sidebar", val ? "collapsed" : "expanded");
+        set({ sidebarCollapsed: val });
+    },
+    toggleSidebar: () => {
+        const { sidebarCollapsed } = get();
+        const next = !sidebarCollapsed;
+        localStorage.setItem("devvault-sidebar", next ? "collapsed" : "expanded");
+        set({ sidebarCollapsed: next });
+    },
+    theme: (typeof window !== "undefined" ? (localStorage.getItem("devvault-theme") as "light" | "dark") : null) || "dark",
+    setTheme: (theme) => {
+        localStorage.setItem("devvault-theme", theme);
+        set({ theme });
+    },
+    toggleTheme: () => {
+        const { theme } = get();
+        const next = theme === "dark" ? "light" : "dark";
+        localStorage.setItem("devvault-theme", next);
+        set({ theme: next });
+    },
 }));

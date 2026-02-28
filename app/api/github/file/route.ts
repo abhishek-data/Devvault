@@ -5,6 +5,22 @@ import { Octokit } from "@octokit/rest";
 import { noteToMarkdown } from "@/lib/sync/markdown";
 import type { Note } from "@/lib/types";
 
+async function ensureRepoExists(octokit: Octokit, owner: string) {
+    try {
+        await octokit.rest.repos.get({ owner, repo: "devvault-notes" });
+    } catch {
+        // Repo doesn't exist — create it
+        await octokit.rest.repos.createForAuthenticatedUser({
+            name: "devvault-notes",
+            description: "DevVault — Developer Knowledge OS synced notes",
+            private: true,
+            auto_init: true,
+        });
+        // Small delay to allow GitHub to initialize the repo
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+}
+
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session || !(session as any).accessToken) {
@@ -15,15 +31,25 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { note, action } = body as { note: Note; action: "create" | "update" | "delete" };
+        const { note, action } = body as {
+            note: Note;
+            action: "create" | "update" | "delete";
+        };
 
         const user = await octokit.rest.users.getAuthenticated();
         const owner = user.data.login;
+
+        // Auto-create repo if it doesn't exist
+        await ensureRepoExists(octokit, owner);
+
         const path = `notes/${note.id}.md`;
 
         if (action === "delete") {
             if (!note.githubSha) {
-                return NextResponse.json({ error: "No SHA for delete" }, { status: 400 });
+                return NextResponse.json(
+                    { error: "No SHA for delete" },
+                    { status: 400 }
+                );
             }
             await octokit.rest.repos.deleteFile({
                 owner,
@@ -38,59 +64,36 @@ export async function POST(request: NextRequest) {
         const content = noteToMarkdown(note);
         const encoded = Buffer.from(content).toString("base64");
 
-        if (action === "create") {
-            const res = await octokit.rest.repos.createOrUpdateFileContents({
-                owner,
-                repo: "devvault-notes",
-                path,
-                message: `Add ${note.title}`,
-                content: encoded,
-            });
-            return NextResponse.json({
-                sha: res.data.content?.sha,
-            });
-        }
+        // For both create and update, try to get existing SHA first
+        let sha: string | undefined = note.githubSha;
 
-        if (action === "update") {
-            // Try to get current SHA if not provided
-            let sha = note.githubSha;
-            if (!sha) {
-                try {
-                    const existing = await octokit.rest.repos.getContent({
-                        owner,
-                        repo: "devvault-notes",
-                        path,
-                    });
-                    if ("sha" in existing.data) {
-                        sha = existing.data.sha;
-                    }
-                } catch {
-                    // File doesn't exist, create instead
-                    const res = await octokit.rest.repos.createOrUpdateFileContents({
-                        owner,
-                        repo: "devvault-notes",
-                        path,
-                        message: `Add ${note.title}`,
-                        content: encoded,
-                    });
-                    return NextResponse.json({ sha: res.data.content?.sha });
+        if (!sha) {
+            try {
+                const existing = await octokit.rest.repos.getContent({
+                    owner,
+                    repo: "devvault-notes",
+                    path,
+                });
+                if ("sha" in existing.data) {
+                    sha = existing.data.sha;
                 }
+            } catch {
+                // File doesn't exist yet — that's fine, create without SHA
             }
-
-            const res = await octokit.rest.repos.createOrUpdateFileContents({
-                owner,
-                repo: "devvault-notes",
-                path,
-                message: `Update ${note.title}`,
-                content: encoded,
-                sha,
-            });
-            return NextResponse.json({
-                sha: res.data.content?.sha,
-            });
         }
 
-        return NextResponse.json({ error: "Invalid action" }, { status: 400 });
+        const res = await octokit.rest.repos.createOrUpdateFileContents({
+            owner,
+            repo: "devvault-notes",
+            path,
+            message: sha ? `Update ${note.title}` : `Add ${note.title}`,
+            content: encoded,
+            ...(sha ? { sha } : {}),
+        });
+
+        return NextResponse.json({
+            sha: res.data.content?.sha,
+        });
     } catch (error: any) {
         const status = error.status || 500;
         return NextResponse.json(

@@ -7,9 +7,10 @@ import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import type { Note } from "@/lib/types";
 import { NoteList } from "./NoteList";
+import { cn } from "@/lib/utils";
 
 export function Sidebar() {
-    const { upsertNote, setActiveNote } = useDevVaultStore();
+    const { upsertNote, setActiveNote, sidebarCollapsed } = useDevVaultStore();
     const router = useRouter();
 
     const handleNewNote = async () => {
@@ -39,7 +40,12 @@ export function Sidebar() {
     };
 
     return (
-        <aside className="w-[260px] min-w-[260px] h-[calc(100vh-3.5rem)] bg-zinc-900 border-r border-zinc-800 flex flex-col fixed top-14 left-0 z-40">
+        <aside
+            className={cn(
+                "h-[calc(100vh-3.5rem)] bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col fixed top-14 left-0 z-40 transition-all duration-200",
+                sidebarCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-[260px] min-w-[260px]"
+            )}
+        >
             {/* New Note button */}
             <div className="p-3">
                 <button
@@ -52,7 +58,7 @@ export function Sidebar() {
             </div>
 
             {/* Separator */}
-            <div className="border-t border-zinc-800" />
+            <div className="border-t border-zinc-200 dark:border-zinc-800" />
 
             {/* Note list */}
             <div className="flex-1 overflow-y-auto">
