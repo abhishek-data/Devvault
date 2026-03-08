@@ -1,49 +1,52 @@
 "use client";
 
 import { useDevVaultStore } from "@/lib/store";
-import { cn } from "@/lib/utils";
 
 export function SyncStatusIndicator() {
-    const { syncStatus, isDirty, isGitHubConnected, conflict } =
-        useDevVaultStore();
+  const { syncStatus, isDirty, isGitHubConnected, conflict } = useDevVaultStore();
 
-    const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
+  const isOffline = typeof navigator !== "undefined" && !navigator.onLine;
 
-    let dotColor = "bg-zinc-500";
-    let label = "Local only";
-    let animate = false;
+  let dotColor = "var(--sync-local)";
+  let labelColor = "var(--text-secondary)";
+  let label = "Local";
+  let animate = false;
 
-    if (conflict) {
-        dotColor = "bg-red-500";
-        label = "Conflict — resolve";
-        animate = true;
-    } else if (isOffline) {
-        dotColor = "bg-orange-500";
-        label = "Offline";
-    } else if (isDirty) {
-        dotColor = "bg-yellow-500";
-        label = "Unsaved changes";
-    } else if (syncStatus === "syncing") {
-        dotColor = "bg-blue-500";
-        label = "Syncing...";
-        animate = true;
-    } else if (!isGitHubConnected) {
-        dotColor = "bg-zinc-500";
-        label = "Local only";
-    } else if (syncStatus === "idle") {
-        dotColor = "bg-green-500";
-        label = "Synced";
-    } else if (syncStatus === "error") {
-        dotColor = "bg-red-500";
-        label = "Sync error";
-    }
+  if (conflict) {
+    dotColor = "var(--sync-conflict)";
+    labelColor = "var(--sync-conflict)";
+    label = "Conflict";
+    animate = true;
+  } else if (isOffline) {
+    dotColor = "var(--sync-offline)";
+    label = "Offline";
+  } else if (isDirty || syncStatus === "syncing") {
+    dotColor = "var(--sync-pending)";
+    label = syncStatus === "syncing" ? "Syncing" : "Pending";
+    animate = true;
+  } else if (syncStatus === "error") {
+    dotColor = "var(--sync-conflict)";
+    labelColor = "var(--sync-conflict)";
+    label = "Error";
+  } else if (isGitHubConnected) {
+    dotColor = "var(--sync-synced)";
+    label = "Synced";
+  }
 
-    return (
-        <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <span
-                className={cn("w-2 h-2 rounded-full", dotColor, animate && "animate-pulse")}
-            />
-            <span>{label}</span>
-        </div>
-    );
+  return (
+    <div className="h-6 px-[10px] rounded-[var(--radius-md)] flex items-center gap-[7px] hover:bg-[var(--bg-overlay)] cursor-pointer">
+      <span
+        className="w-[6px] h-[6px] rounded-full"
+        style={{
+          backgroundColor: dotColor,
+          animation: animate
+            ? `pulse ${conflict ? "1s" : "1.4s"} ease infinite`
+            : "none",
+        }}
+      />
+      <span className="text-[11px] font-medium" style={{ color: labelColor }}>
+        {label}
+      </span>
+    </div>
+  );
 }

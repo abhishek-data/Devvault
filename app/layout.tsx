@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className="dark" suppressHydrationWarning>
-            <body className="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans antialiased">
+            <body>
                 <Providers>
                     <StoreInitializer>
                         <AppShell>{children}</AppShell>

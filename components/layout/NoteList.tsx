@@ -9,120 +9,108 @@ import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 const syncDotColors: Record<string, string> = {
-    local_only: "bg-zinc-500",
-    synced: "bg-green-500",
-    pending: "bg-yellow-500",
-    conflict: "bg-red-500",
+  local_only: "bg-[var(--sync-local)]",
+  synced: "bg-[var(--sync-synced)]",
+  pending: "bg-[var(--sync-pending)]",
+  conflict: "bg-[var(--sync-conflict)]",
 };
 
 export function NoteList() {
-    const { notes, activeNoteId, setActiveNote, removeNote, rebuildSearchIndex } =
-        useDevVaultStore();
-    const router = useRouter();
-    const pathname = usePathname();
-    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const { notes, activeNoteId, setActiveNote, removeNote, rebuildSearchIndex } =
+    useDevVaultStore();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
-    const sortedNotes = [...notes].sort(
-        (a, b) =>
-            new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+  const sortedNotes = [...notes].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
 
-    const handleDelete = async (noteId: string, e: React.MouseEvent) => {
-        e.stopPropagation();
+  const handleDelete = async (noteId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
 
-        if (confirmDeleteId === noteId) {
-            // Second click — actually delete
-            await StorageService.deleteNote(noteId);
-            removeNote(noteId);
-            rebuildSearchIndex();
-            setConfirmDeleteId(null);
-            toast.success("Note deleted");
+    if (confirmDeleteId === noteId) {
+      await StorageService.deleteNote(noteId);
+      removeNote(noteId);
+      rebuildSearchIndex();
+      setConfirmDeleteId(null);
+      toast.success("Note deleted");
 
-            // If viewing the deleted note, navigate home
-            if (pathname === `/notes/${noteId}`) {
-                router.push("/");
-            }
-        } else {
-            // First click — show confirmation
-            setConfirmDeleteId(noteId);
-            // Auto-reset after 3 seconds
-            setTimeout(() => setConfirmDeleteId(null), 3000);
-        }
-    };
-
-    if (sortedNotes.length === 0) {
-        return (
-            <div className="p-4 text-center text-sm text-zinc-400 dark:text-zinc-500">
-                No notes yet. Create your first note!
-            </div>
-        );
+      if (pathname === `/notes/${noteId}`) {
+        router.push("/");
+      }
+    } else {
+      setConfirmDeleteId(noteId);
+      setTimeout(() => setConfirmDeleteId(null), 3000);
     }
+  };
 
+  if (sortedNotes.length === 0) {
     return (
-        <div className="py-1">
-            {sortedNotes.map((note) => (
-                <div
-                    key={note.id}
-                    className={cn(
-                        "group w-full text-left px-3 py-2.5 flex flex-col gap-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors border-l-2 cursor-pointer",
-                        activeNoteId === note.id
-                            ? "bg-zinc-100 dark:bg-zinc-800 border-l-blue-500"
-                            : "border-l-transparent"
-                    )}
-                    onClick={() => {
-                        setActiveNote(note.id);
-                        router.push(`/notes/${note.id}`);
-                    }}
-                >
-                    <div className="flex items-center gap-2">
-                        <span
-                            className={cn(
-                                "w-1.5 h-1.5 rounded-full flex-shrink-0",
-                                syncDotColors[note.syncStatus] || "bg-zinc-500"
-                            )}
-                        />
-                        <span className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate flex-1">
-                            {note.title || "Untitled Note"}
-                        </span>
-                        <button
-                            onClick={(e) => handleDelete(note.id, e)}
-                            className={cn(
-                                "p-1 rounded transition-all flex-shrink-0",
-                                confirmDeleteId === note.id
-                                    ? "bg-red-100 dark:bg-red-900/40 text-red-500 opacity-100"
-                                    : "opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-red-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                            )}
-                            title={
-                                confirmDeleteId === note.id
-                                    ? "Click again to confirm"
-                                    : "Delete note"
-                            }
-                        >
-                            <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                    </div>
-                    {confirmDeleteId === note.id && (
-                        <p className="text-xs text-red-400 pl-3.5">Click again to confirm</p>
-                    )}
-                    {note.tags.length > 0 && confirmDeleteId !== note.id && (
-                        <div className="flex gap-1 flex-wrap pl-3.5">
-                            {note.tags.slice(0, 3).map((tag) => (
-                                <span
-                                    key={tag}
-                                    className="text-xs px-1.5 py-0.5 rounded bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400"
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                            {note.tags.length > 3 && (
-                                <span className="text-xs text-zinc-400 dark:text-zinc-500">
-                                    +{note.tags.length - 3}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-            ))}
-        </div>
+      <div className="px-3 py-6 text-center text-[11px] text-[var(--text-tertiary)]">
+        No notes yet
+      </div>
     );
+  }
+
+  return (
+    <div className="py-1">
+      {sortedNotes.map((note) => (
+        <div
+          key={note.id}
+          className={cn(
+            "note-item group px-[10px] py-[7px] mx-[6px] rounded-[var(--radius-md)] cursor-pointer",
+            "hover:bg-[var(--bg-overlay)] border-l-2 border-transparent",
+            activeNoteId === note.id &&
+              "bg-[var(--bg-overlay)] border-l-[var(--accent-primary)] pl-2"
+          )}
+          onClick={() => {
+            setActiveNote(note.id);
+            router.push(`/notes/${note.id}`);
+          }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-[13px] font-medium text-[var(--text-primary)] truncate flex-1">
+              {note.title || "Untitled"}
+            </span>
+            <span
+              className={cn(
+                "w-[5px] h-[5px] rounded-full flex-shrink-0",
+                syncDotColors[note.syncStatus] || "bg-[var(--sync-local)]"
+              )}
+            />
+            <button
+              onClick={(e) => handleDelete(note.id, e)}
+              className={cn(
+                "icon-button !w-7 !h-7 flex-shrink-0",
+                confirmDeleteId === note.id
+                  ? "opacity-100 text-[var(--red)] bg-[rgba(248,113,113,0.08)]"
+                  : "opacity-0 group-hover:opacity-100"
+              )}
+              title={
+                confirmDeleteId === note.id ? "Click again to confirm" : "Delete note"
+              }
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-[6px] mt-[3px]">
+            <span className="text-[11px] text-[var(--text-tertiary)]">
+              {new Date(note.updatedAt).toLocaleDateString()}
+            </span>
+            {note.tags.slice(0, 2).map((tag) => (
+              <span key={tag} className="tag-pill !h-[16px] !px-[6px] !text-[10px]">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          {confirmDeleteId === note.id && (
+            <p className="text-[11px] text-[var(--red)] mt-1">Click again to confirm</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 }
