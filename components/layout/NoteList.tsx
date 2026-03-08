@@ -43,8 +43,8 @@ export function NoteList() {
       setConfirmDeleteId(null);
       toast.success("Note deleted");
 
-      if (pathname === `/notes/${noteId}`) {
-        router.push("/");
+      if (pathname === `/app/notes/${noteId}`) {
+        router.push("/app");
       }
     } else {
       setConfirmDeleteId(noteId);
@@ -76,7 +76,7 @@ export function NoteList() {
             if (typeof window !== "undefined" && window.innerWidth < 768) {
               setSidebarCollapsed(true);
             }
-            router.push(`/notes/${note.id}`);
+            router.push(`/app/notes/${note.id}`);
           }}
         >
           <div className="flex items-center gap-2">

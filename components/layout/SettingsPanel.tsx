@@ -3,7 +3,18 @@
 import { useState, useEffect } from "react";
 import { useDevVaultStore } from "@/lib/store";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { X, Github, HardDrive, Trash2, RefreshCw, Clock, Contrast } from "lucide-react";
+import {
+  X,
+  Github,
+  HardDrive,
+  Trash2,
+  RefreshCw,
+  Clock,
+  Contrast,
+  ExternalLink,
+  LogOut,
+  GitBranch,
+} from "lucide-react";
 import { toast } from "sonner";
 import { StorageService } from "@/lib/db/storage";
 
@@ -35,6 +46,8 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
   const { data: session } = useSession();
   const [storageEstimate, setStorageEstimate] = useState<string>("Calculating...");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const username = (session as any)?.user?.username;
 
   useEffect(() => {
     if ((session as any)?.accessToken) {
@@ -112,6 +125,86 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
         </div>
 
         <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
+          <div className="section-label mb-3">Account</div>
+          {isGitHubConnected && session ? (
+            <>
+              <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-[14px] flex items-center gap-3 mb-4">
+                {session.user?.image ? (
+                  <img
+                    src={session.user.image}
+                    alt="avatar"
+                    className="w-9 h-9 rounded-full border-2 border-[var(--border-default)]"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full border-2 border-[var(--border-default)] bg-[var(--bg-overlay)]" />
+                )}
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold text-[var(--text-primary)] truncate">{session.user?.name || username}</p>
+                  <p className="text-[11px] text-[var(--text-tertiary)]">@{username || "github-user"}</p>
+                </div>
+                {username && (
+                  <a
+                    href={`https://github.com/${username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-auto text-[var(--text-tertiary)] hover:text-[var(--text-accent)]"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between py-[10px] border-b border-[var(--border-subtle)]">
+                <div className="inline-flex items-center">
+                  <GitBranch className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
+                  <span className="text-[12px] text-[var(--text-secondary)] ml-1.5">devvault-notes</span>
+                </div>
+                <div className="inline-flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
+                  <span className="text-[11px] text-[var(--green)]">Connected</span>
+                </div>
+              </div>
+
+              <button onClick={handleSync} className="btn-ghost w-full mt-[10px] inline-flex items-center justify-center gap-1.5">
+                <RefreshCw className="h-3 w-3" />
+                Sync now
+              </button>
+
+              {username && (
+                <a
+                  href={`https://github.com/${username}/devvault-notes`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost w-full mt-2 inline-flex items-center justify-center gap-1.5"
+                >
+                  <ExternalLink className="h-3 w-3" />
+                  View your notes repo
+                </a>
+              )}
+
+              <button
+                onClick={() => {
+                  signOut({ callbackUrl: "/" });
+                  setGitHubConnected(false);
+                }}
+                className="btn-ghost btn-destructive w-full mt-2 inline-flex items-center justify-center gap-1.5"
+              >
+                <LogOut className="h-3 w-3" />
+                Sign out
+              </button>
+            </>
+          ) : (
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-4">
+              <p className="text-[12px] text-[var(--text-secondary)] mb-3">Not connected</p>
+              <button onClick={() => signIn("github", { callbackUrl: "/app" })} className="btn-primary w-full inline-flex items-center justify-center gap-2">
+                <Github className="h-3.5 w-3.5" />
+                Sign in with GitHub
+              </button>
+            </div>
+          )}
+        </section>
+
+        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
           <div className="section-label mb-3">Appearance</div>
           <button onClick={toggleTheme} className="btn-ghost w-full inline-flex items-center justify-center gap-2">
             <Contrast className="h-3.5 w-3.5" />
@@ -120,51 +213,10 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
         </section>
 
         <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-3">GitHub</div>
-          {isGitHubConnected && session ? (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                {session.user?.image && (
-                  <img src={session.user.image} alt="avatar" className="h-7 w-7 rounded-full" />
-                )}
-                <div>
-                  <p className="text-[13px] text-[var(--text-primary)]">{session.user?.name}</p>
-                  <a
-                    href={`https://github.com/${session.user?.name}/devvault-notes`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[11px] text-[var(--text-accent)] hover:underline"
-                  >
-                    devvault-notes repo
-                  </a>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button onClick={handleSync} className="btn-ghost inline-flex items-center gap-1.5">
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  Sync
-                </button>
-                <button
-                  onClick={() => {
-                    signOut();
-                    setGitHubConnected(false);
-                  }}
-                  className="btn-ghost"
-                >
-                  Disconnect
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button onClick={() => signIn("github")} className="btn-ghost inline-flex items-center gap-2">
-              <Github className="h-3.5 w-3.5" />
-              Connect GitHub
-            </button>
-          )}
-        </section>
-
-        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-2">Auto Sync</div>
+          <div className="section-label mb-2 inline-flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" />
+            Auto Sync
+          </div>
           <p className="text-[11px] text-[var(--text-tertiary)] mb-3">
             How often to push notes to GitHub.
           </p>
@@ -174,17 +226,9 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                 key={opt.value}
                 onClick={() => {
                   setSyncIntervalMinutes(opt.value);
-                  toast.success(
-                    opt.value === 0
-                      ? "Auto-sync disabled"
-                      : `Auto-sync set to every ${opt.label}`
-                  );
+                  toast.success(opt.value === 0 ? "Auto-sync disabled" : `Auto-sync set to every ${opt.label}`);
                 }}
-                className={
-                  syncIntervalMinutes === opt.value
-                    ? "btn-primary"
-                    : "btn-ghost"
-                }
+                className={syncIntervalMinutes === opt.value ? "btn-primary" : "btn-ghost"}
               >
                 {opt.label}
               </button>
@@ -204,16 +248,10 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
           <div className="section-label mb-3 text-[var(--red)]">Danger Zone</div>
           {showDeleteConfirm ? (
             <div className="space-y-2">
-              <p className="text-[12px] text-[var(--text-secondary)]">
-                Permanently delete all local notes?
-              </p>
+              <p className="text-[12px] text-[var(--text-secondary)]">Permanently delete all local notes?</p>
               <div className="flex gap-2">
-                <button onClick={handleDeleteAll} className="btn-primary bg-[var(--red)] hover:bg-[var(--red)]">
-                  Delete all
-                </button>
-                <button onClick={() => setShowDeleteConfirm(false)} className="btn-ghost">
-                  Cancel
-                </button>
+                <button onClick={handleDeleteAll} className="btn-primary bg-[var(--red)] hover:bg-[var(--red)]">Delete all</button>
+                <button onClick={() => setShowDeleteConfirm(false)} className="btn-ghost">Cancel</button>
               </div>
             </div>
           ) : (

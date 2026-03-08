@@ -114,7 +114,7 @@ export function BlockEditor({ note, onSave }: BlockEditorProps) {
 
   useEffect(() => {
     const base = note.title || "Untitled Note";
-    document.title = isDirty ? `${base} •` : base;
+    document.title = isDirty ? `${base} • DevVault` : `${base} — DevVault`;
     return () => {
       document.title = "DevVault";
     };

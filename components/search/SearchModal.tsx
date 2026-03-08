@@ -67,7 +67,7 @@ export function SearchModal() {
     const item = result.item;
     const hash = item.blockId ? `#block-${item.blockId}` : "";
     setSearchOpen(false);
-    window.location.href = `/notes/${item.noteId}${hash}`;
+    window.location.href = `/app/notes/${item.noteId}${hash}`;
   };
 
   if (!isSearchOpen) return null;

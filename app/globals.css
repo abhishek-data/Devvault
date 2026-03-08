@@ -99,6 +99,10 @@ body {
   color: var(--text-primary);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
@@ -512,7 +516,7 @@ kbd {
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(10px);
   }
 
   to {

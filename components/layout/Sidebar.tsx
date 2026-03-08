@@ -36,7 +36,7 @@ export function Sidebar() {
     await StorageService.saveNote(newNote);
     upsertNote(newNote);
     setActiveNote(id);
-    router.push(`/notes/${id}`);
+    router.push(`/app/notes/${id}`);
   };
 
     return (
