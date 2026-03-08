@@ -5,6 +5,10 @@ import { ProtectedAppFrame } from "@/components/ProtectedAppFrame";
 
 export const metadata: Metadata = {
   title: "DevVault",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

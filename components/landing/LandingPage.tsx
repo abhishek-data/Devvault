@@ -15,8 +15,29 @@ import {
 } from "lucide-react";
 
 export function LandingPage() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mydevvault.vercel.app";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "DevVault",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
+    url: siteUrl,
+    description:
+      "Store notes and code snippets locally. Sync to your own GitHub repo. Free forever.",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] overflow-x-hidden scroll-smooth">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="fixed top-0 inset-x-0 h-14 bg-[rgba(8,8,16,0.8)] backdrop-blur-[12px] border-b border-[var(--border-subtle)] z-[100]">
         <div
           className="h-full flex items-center justify-between"
