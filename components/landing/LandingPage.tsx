@@ -51,7 +51,7 @@ export function LandingPage() {
           <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[var(--text-secondary)]">
             <a href="#features" className="hover:text-[var(--text-primary)]">Features</a>
             <a href="#how-it-works" className="hover:text-[var(--text-primary)]">How it works</a>
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-[var(--text-primary)]">GitHub</a>
+            <a href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer" className="hover:text-[var(--text-primary)]">GitHub</a>
           </nav>
 
           <button
@@ -288,7 +288,7 @@ export function LandingPage() {
             <p className="text-[12px] text-[var(--text-tertiary)] mt-2">Your notes. Your GitHub. Your rules.</p>
           </div>
           <div className="flex items-center gap-5 text-[12px] text-[var(--text-tertiary)]">
-            <a className="hover:text-[var(--text-secondary)] inline-flex items-center gap-1" href="https://github.com" target="_blank" rel="noreferrer">
+            <a className="hover:text-[var(--text-secondary)] inline-flex items-center gap-1" href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer">
               GitHub <ExternalLink className="h-3 w-3" />
             </a>
             <span className="hover:text-[var(--text-secondary)]">Made by Abhishek</span>
