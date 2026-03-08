@@ -36,10 +36,10 @@ export function Header() {
   return (
     <>
       <header
-        className="h-[44px] border-b border-[var(--border-subtle)] backdrop-blur-[12px] backdrop-saturate-[180%] flex items-center justify-between px-4 fixed top-0 left-0 right-0 z-[100]"
+        className="h-[44px] border-b border-[var(--border-subtle)] backdrop-blur-[12px] backdrop-saturate-[180%] flex items-center justify-between px-3 sm:px-4 md:px-5 fixed top-0 left-0 right-0 z-[100]"
         style={{ background: "var(--header-bg)" }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <button
             onClick={toggleSidebar}
             className="icon-button"
@@ -52,21 +52,24 @@ export function Header() {
             )}
           </button>
           <Vault className="h-6 w-6 text-[var(--accent-primary)]" />
-          <span className="text-[14px] font-semibold text-[var(--text-primary)]">
+          <span className="text-[14px] font-semibold text-[var(--text-primary)] hidden sm:inline">
             DevVault
           </span>
         </div>
 
         <button
           onClick={() => setSearchOpen(true)}
-          className="w-[220px] h-7 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] px-[10px] flex items-center gap-[6px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-overlay)]"
+          className="hidden sm:flex w-[170px] md:w-[220px] lg:w-[260px] h-7 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] px-[10px] items-center gap-[6px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-overlay)]"
         >
           <Search className="h-[13px] w-[13px] text-[var(--text-tertiary)]" />
-          <span className="text-[12px] text-[var(--text-tertiary)]">Search...</span>
-          <kbd className="ml-auto">⌘K</kbd>
+          <span className="text-[12px] text-[var(--text-tertiary)] truncate">Search...</span>
+          <kbd className="ml-auto hidden md:inline-block">⌘K</kbd>
+        </button>
+        <button onClick={() => setSearchOpen(true)} className="icon-button sm:hidden">
+          <Search className="h-4 w-4" />
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <SyncStatusIndicator />
           <div className="w-px h-4 bg-[var(--border-default)]" />
           <button onClick={() => setSettingsOpen(true)} className="icon-button">

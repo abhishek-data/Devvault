@@ -34,7 +34,7 @@ export function SyncStatusIndicator() {
   }
 
   return (
-    <div className="h-6 px-[10px] rounded-[var(--radius-md)] flex items-center gap-[7px] hover:bg-[var(--bg-overlay)] cursor-pointer">
+    <div className="h-6 px-[8px] sm:px-[10px] rounded-[var(--radius-md)] flex items-center gap-[7px] hover:bg-[var(--bg-overlay)] cursor-pointer">
       <span
         className="w-[6px] h-[6px] rounded-full"
         style={{
@@ -44,7 +44,7 @@ export function SyncStatusIndicator() {
             : "none",
         }}
       />
-      <span className="text-[11px] font-medium" style={{ color: labelColor }}>
+      <span className="hidden sm:inline text-[11px] font-medium" style={{ color: labelColor }}>
         {label}
       </span>
     </div>

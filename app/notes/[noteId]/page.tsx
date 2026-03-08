@@ -108,7 +108,7 @@ export default function NotePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-44px)]">
+      <div className="flex items-center justify-center min-h-[calc(100vh-44px)] px-4">
         <Loader2 className="h-6 w-6 animate-spin text-[var(--text-secondary)]" />
       </div>
     );
@@ -116,7 +116,7 @@ export default function NotePage() {
 
   if (!note) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-44px)] gap-2">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-44px)] gap-2 px-4">
         <Vault className="h-8 w-8 text-[var(--text-tertiary)] opacity-30" />
         <p className="text-[13px] text-[var(--text-secondary)]">Note not found</p>
       </div>
@@ -125,7 +125,7 @@ export default function NotePage() {
 
   return (
     <div className="note-content min-h-[calc(100vh-44px)] bg-[var(--bg-base)]">
-      <div className="px-[56px] pt-[40px] pb-[24px] border-b border-[var(--border-subtle)]">
+      <div className="px-4 sm:px-6 md:px-10 lg:px-[56px] pt-6 sm:pt-7 md:pt-8 lg:pt-[40px] pb-5 sm:pb-6 border-b border-[var(--border-subtle)]">
         <input
           type="text"
           value={note.title}
@@ -160,8 +160,10 @@ export default function NotePage() {
         </div>
       </div>
 
-      <div className="px-[56px] pt-8 pb-20">
-        <BlockEditor note={note} onSave={handleSave} />
+      <div className="px-4 sm:px-6 md:px-10 lg:px-[56px] pt-6 sm:pt-7 md:pt-8 pb-16 sm:pb-20">
+        <div className="max-w-[860px]">
+          <BlockEditor note={note} onSave={handleSave} />
+        </div>
       </div>
     </div>
   );

@@ -103,7 +103,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
   return (
     <div className="fixed inset-0 z-[80]">
       <div className="absolute inset-0 bg-[rgba(4,4,12,0.5)]" onClick={() => onOpenChange(false)} />
-      <div className="absolute right-0 top-0 bottom-0 w-[320px] bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] overflow-y-auto translate-x-0 transition-transform duration-300">
+      <div className="absolute right-0 top-0 bottom-0 w-full sm:max-w-[320px] md:max-w-[360px] bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] overflow-y-auto translate-x-0 transition-transform duration-300">
         <div className="h-[44px] px-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
           <h2 className="text-[13px] font-semibold text-[var(--text-primary)]">Settings</h2>
           <button onClick={() => onOpenChange(false)} className="icon-button">

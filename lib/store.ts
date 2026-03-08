@@ -99,7 +99,14 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
     setDirty: (val) => set({ isDirty: val }),
 
     // UI
-    sidebarCollapsed: typeof window !== "undefined" ? localStorage.getItem("devvault-sidebar") === "collapsed" : false,
+    sidebarCollapsed:
+        typeof window !== "undefined"
+            ? (() => {
+                const saved = localStorage.getItem("devvault-sidebar");
+                if (saved) return saved === "collapsed";
+                return window.innerWidth < 768;
+            })()
+            : false,
     setSidebarCollapsed: (val) => {
         localStorage.setItem("devvault-sidebar", val ? "collapsed" : "expanded");
         set({ sidebarCollapsed: val });

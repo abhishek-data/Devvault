@@ -39,13 +39,15 @@ export function Sidebar() {
     router.push(`/notes/${id}`);
   };
 
-  return (
-    <aside
-      className={cn(
-        "h-[calc(100vh-44px)] bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] flex flex-col fixed top-[44px] left-0 z-40 transition-all duration-200",
-        sidebarCollapsed ? "w-0 min-w-0 overflow-hidden border-r-0" : "w-[240px] min-w-[240px]"
-      )}
-    >
+    return (
+        <aside
+            className={cn(
+        "h-[calc(100vh-44px)] bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] flex flex-col fixed top-[44px] left-0 z-40 transition-[transform,width] duration-200",
+        sidebarCollapsed
+          ? "w-[220px] min-w-[220px] lg:w-[240px] lg:min-w-[240px] -translate-x-full md:w-0 md:min-w-0 md:translate-x-0 md:overflow-hidden md:border-r-0"
+          : "w-[220px] min-w-[220px] lg:w-[240px] lg:min-w-[240px] translate-x-0"
+            )}
+        >
       <div className="pt-3 px-[10px] pb-3">
         <button
           onClick={handleNewNote}

@@ -16,7 +16,14 @@ const syncDotColors: Record<string, string> = {
 };
 
 export function NoteList() {
-  const { notes, activeNoteId, setActiveNote, removeNote, rebuildSearchIndex } =
+  const {
+    notes,
+    activeNoteId,
+    setActiveNote,
+    setSidebarCollapsed,
+    removeNote,
+    rebuildSearchIndex,
+  } =
     useDevVaultStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -66,6 +73,9 @@ export function NoteList() {
           )}
           onClick={() => {
             setActiveNote(note.id);
+            if (typeof window !== "undefined" && window.innerWidth < 768) {
+              setSidebarCollapsed(true);
+            }
             router.push(`/notes/${note.id}`);
           }}
         >
@@ -85,7 +95,7 @@ export function NoteList() {
                 "icon-button !w-7 !h-7 flex-shrink-0",
                 confirmDeleteId === note.id
                   ? "opacity-100 text-[var(--red)] bg-[rgba(248,113,113,0.08)]"
-                  : "opacity-0 group-hover:opacity-100"
+                  : "opacity-100 md:opacity-0 md:group-hover:opacity-100"
               )}
               title={
                 confirmDeleteId === note.id ? "Click again to confirm" : "Delete note"

@@ -81,7 +81,7 @@ export function SearchModal() {
       }}
     >
       <div
-        className="fixed top-[20%] left-1/2 w-[560px] max-w-[calc(100vw-24px)] max-h-[480px] -translate-x-1/2 bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded-[var(--radius-xl)] overflow-hidden"
+        className="fixed top-[10%] sm:top-[16%] lg:top-[20%] left-1/2 w-[560px] md:w-[620px] max-w-[calc(100vw-24px)] max-h-[70vh] sm:max-h-[480px] -translate-x-1/2 bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded-[var(--radius-xl)] overflow-hidden"
         style={{
           animation: "slideDown 180ms cubic-bezier(0.16,1,0.3,1)",
           boxShadow:
