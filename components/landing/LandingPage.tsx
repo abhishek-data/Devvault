@@ -115,7 +115,7 @@ export function LandingPage() {
             <span className="h-2 w-2 rounded-full bg-[#FEBC2E] opacity-60" />
             <span className="h-2 w-2 rounded-full bg-[#28C840] opacity-60" />
             <div className="ml-3 h-[22px] w-[240px] bg-[var(--bg-overlay)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] px-[10px] text-[11px] text-[var(--text-tertiary)] flex items-center">
-              devvault.app
+              mydevvault.vercel.app
             </div>
           </div>
 
