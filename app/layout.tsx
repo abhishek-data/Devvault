@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { geistSans, geistMono } from "@/lib/fonts";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
@@ -73,7 +74,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <body>
         <Providers>{children}</Providers>
       </body>
