@@ -5,8 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useDevVaultStore } from "@/lib/store";
 import { StorageService } from "@/lib/db/storage";
 import { BlockEditor } from "@/components/editor/BlockEditor";
-import type { Note, NoteType } from "@/lib/types";
+import type { Note, NoteType, LinkBlock } from "@/lib/types";
 import { X, Loader2, Vault, Pin, PinOff, Archive, FolderOpen, FileText, Code2, Bookmark, BookOpen, ChevronDown } from "lucide-react";
+import { LinkCard } from "@/components/capture/LinkCard";
 import { cn } from "@/lib/utils";
 
 const NOTE_TYPES: { type: NoteType; icon: React.ReactNode; label: string }[] = [
@@ -125,6 +126,12 @@ export default function NotePage() {
     if (!note) return;
     await archiveNote(note.id);
     router.push("/app");
+  };
+
+  const handleRemoveLinkBlock = async (blockId: string) => {
+    if (!note) return;
+    const updated = makeUpdate({ blocks: note.blocks.filter((b) => b.blockId !== blockId) });
+    if (updated) await saveNote(updated);
   };
 
   const handleSave = useCallback((updated: Note) => {
@@ -315,6 +322,20 @@ export default function NotePage() {
 
       <div className="px-4 sm:px-6 md:px-10 lg:px-[56px] pt-6 sm:pt-7 md:pt-8 pb-16 sm:pb-20">
         <div className="max-w-[860px]">
+          {/* Render link blocks as cards above the editor */}
+          {note.blocks.filter((b): b is LinkBlock => b.type === "link").length > 0 && (
+            <div className="space-y-3 mb-6">
+              {note.blocks
+                .filter((b): b is LinkBlock => b.type === "link")
+                .map((block) => (
+                  <LinkCard
+                    key={block.blockId}
+                    block={block}
+                    onRemove={() => handleRemoveLinkBlock(block.blockId)}
+                  />
+                ))}
+            </div>
+          )}
           <BlockEditor note={note} onSave={handleSave} />
         </div>
       </div>

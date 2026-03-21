@@ -19,12 +19,16 @@ export function buildSearchIndex(notes: Note[]): SearchIndexEntry[] {
         for (const block of note.blocks) {
             if (block.type === "divider") continue;
 
+            const snippet = block.type === "link"
+                ? `${block.title || ""} ${block.description || ""} ${block.url}`.trim()
+                : block.text;
+
             entries.push({
                 noteId: note.id,
                 noteTitle: note.title,
                 blockId: block.blockId,
                 blockType: block.type,
-                snippet: block.text,
+                snippet,
                 tags: note.tags,
             });
         }

@@ -15,8 +15,10 @@ export function ConflictModal() {
   const getPreview = (note: typeof localNote) => {
     const texts: string[] = [];
     for (const block of note.blocks) {
-      if (block.type !== "divider") {
+      if (block.type !== "divider" && block.type !== "link" && "text" in block) {
         texts.push(block.text);
+      } else if (block.type === "link") {
+        texts.push(block.title || block.url);
       }
       if (texts.join(" ").length > 200) break;
     }
