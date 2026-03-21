@@ -9,14 +9,15 @@ import type { ReactNode } from "react";
 import type { Note } from "@/lib/types";
 
 export function StoreInitializer({ children }: { children: ReactNode }) {
-    const { loadNotes, upsertNote, setGitHubConnected, rebuildSearchIndex } =
+    const { loadNotes, loadFolders, upsertNote, setGitHubConnected, rebuildSearchIndex } =
         useDevVaultStore();
     const { data: session, status } = useSession();
 
-    // Load local notes from IndexedDB
+    // Load local notes and folders from IndexedDB
     useEffect(() => {
         loadNotes();
-    }, [loadNotes]);
+        loadFolders();
+    }, [loadNotes, loadFolders]);
 
     // Auto-pull from GitHub on load when connected
     useEffect(() => {

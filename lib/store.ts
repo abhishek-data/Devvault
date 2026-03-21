@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Note, SearchIndexEntry, ConflictData } from "./types";
+import type { Note, Folder, NoteType, SearchIndexEntry, ConflictData } from "./types";
 import { StorageService } from "./db/storage";
 import { buildSearchIndex } from "./search/index";
 
@@ -12,6 +12,26 @@ interface DevVaultStore {
     upsertNote: (note: Note) => void;
     removeNote: (id: string) => void;
     loadNotes: () => Promise<void>;
+
+    // Folders
+    folders: Folder[];
+    activeFolderId: string | null;
+    setActiveFolderId: (id: string | null) => void;
+    loadFolders: () => Promise<void>;
+    upsertFolder: (folder: Folder) => void;
+    removeFolder: (id: string) => void;
+
+    // Filters
+    noteTypeFilter: NoteType | null;
+    setNoteTypeFilter: (type: NoteType | null) => void;
+    showArchive: boolean;
+    setShowArchive: (val: boolean) => void;
+
+    // Note actions
+    toggleNotePin: (noteId: string) => Promise<void>;
+    archiveNote: (noteId: string) => Promise<void>;
+    restoreNote: (noteId: string) => Promise<void>;
+    moveNoteToFolder: (noteId: string, folderId: string | undefined) => Promise<void>;
 
     // Search
     searchIndex: SearchIndexEntry[];
@@ -74,6 +94,57 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
         set({ notes, searchIndex });
     },
 
+    // Folders
+    folders: [],
+    activeFolderId: null,
+    setActiveFolderId: (id) => set({ activeFolderId: id, showArchive: false }),
+    loadFolders: async () => {
+        const folders = await StorageService.getAllFolders();
+        set({ folders });
+    },
+    upsertFolder: (folder) => {
+        const { folders } = get();
+        const idx = folders.findIndex((f) => f.id === folder.id);
+        if (idx >= 0) {
+            const updated = [...folders];
+            updated[idx] = folder;
+            set({ folders: updated });
+        } else {
+            set({ folders: [folder, ...folders] });
+        }
+    },
+    removeFolder: (id) => {
+        const { folders, activeFolderId } = get();
+        set({
+            folders: folders.filter((f) => f.id !== id),
+            activeFolderId: activeFolderId === id ? null : activeFolderId,
+        });
+    },
+
+    // Filters
+    noteTypeFilter: null,
+    setNoteTypeFilter: (type) => set({ noteTypeFilter: type }),
+    showArchive: false,
+    setShowArchive: (val) => set({ showArchive: val, activeFolderId: val ? null : get().activeFolderId }),
+
+    // Note actions
+    toggleNotePin: async (noteId) => {
+        const updated = await StorageService.togglePin(noteId);
+        if (updated) get().upsertNote(updated);
+    },
+    archiveNote: async (noteId) => {
+        await StorageService.archiveNote(noteId);
+        get().removeNote(noteId);
+    },
+    restoreNote: async (noteId) => {
+        await StorageService.restoreNote(noteId);
+        await get().loadNotes();
+    },
+    moveNoteToFolder: async (noteId, folderId) => {
+        const updated = await StorageService.moveNoteToFolder(noteId, folderId);
+        if (updated) get().upsertNote(updated);
+    },
+
     // Search
     searchIndex: [],
     isSearchOpen: false,
@@ -134,3 +205,25 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
         set({ syncIntervalMinutes: val });
     },
 }));
+
+/** Selector: returns the visible notes list based on active folder, filters, and archive state */
+export function selectVisibleNotes(state: DevVaultStore): Note[] {
+    let notes = state.notes;
+
+    // Folder filter
+    if (state.activeFolderId) {
+        notes = notes.filter((n) => n.folderId === state.activeFolderId);
+    }
+
+    // Note type filter
+    if (state.noteTypeFilter) {
+        notes = notes.filter((n) => (n.noteType || "note") === state.noteTypeFilter);
+    }
+
+    // Sort: pinned first, then by updatedAt descending
+    return [...notes].sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return b.updatedAt.localeCompare(a.updatedAt);
+    });
+}
