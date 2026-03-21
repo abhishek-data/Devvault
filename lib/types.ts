@@ -2,6 +2,18 @@ export type SyncStatus = "local_only" | "synced" | "pending" | "conflict";
 
 export type BlockType = "paragraph" | "heading" | "code" | "divider";
 
+export type NoteType = "note" | "snippet" | "bookmark" | "reference";
+
+export interface Folder {
+    id: string;
+    name: string;
+    parentId?: string;
+    icon?: string;
+    color?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface ParagraphBlock {
     blockId: string;
     type: "paragraph";
@@ -39,6 +51,10 @@ export interface Note {
     syncStatus: SyncStatus;
     githubSha?: string;
     version: number;
+    folderId?: string;
+    noteType?: NoteType;
+    isPinned?: boolean;
+    isArchived?: boolean;
 }
 
 export interface SearchIndexEntry {

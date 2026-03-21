@@ -2,7 +2,7 @@ import type { Note } from "../types";
 import matter from "gray-matter";
 
 export function noteToMarkdown(note: Note): string {
-    const frontmatter = {
+    const frontmatter: Record<string, unknown> = {
         id: note.id,
         title: note.title,
         tags: note.tags,
@@ -10,6 +10,12 @@ export function noteToMarkdown(note: Note): string {
         updatedAt: note.updatedAt,
         version: note.version,
     };
+
+    // Only include new fields when they have non-default values
+    if (note.folderId) frontmatter.folderId = note.folderId;
+    if (note.noteType && note.noteType !== "note") frontmatter.noteType = note.noteType;
+    if (note.isPinned) frontmatter.isPinned = true;
+    if (note.isArchived) frontmatter.isArchived = true;
 
     const lines: string[] = [];
 
@@ -131,5 +137,9 @@ export function markdownToNote(markdown: string, sha: string): Note {
         syncStatus: "synced",
         githubSha: sha,
         version: data.version || 1,
+        folderId: data.folderId || undefined,
+        noteType: data.noteType || "note",
+        isPinned: data.isPinned || false,
+        isArchived: data.isArchived || false,
     };
 }
