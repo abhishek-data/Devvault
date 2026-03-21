@@ -43,6 +43,20 @@ export function noteToMarkdown(note: Note): string {
                 lines.push("---");
                 lines.push("");
                 break;
+            case "link": {
+                const meta = JSON.stringify({
+                    title: block.title,
+                    description: block.description,
+                    image: block.image,
+                    domain: block.domain,
+                    favicon: block.favicon,
+                    contentType: block.contentType,
+                });
+                lines.push(`<!-- block:${block.blockId}:link:${meta} -->`);
+                lines.push(`[${block.title || block.url}](${block.url})`);
+                lines.push("");
+                break;
+            }
         }
     }
 
@@ -117,6 +131,29 @@ export function markdownToNote(markdown: string, sha: string): Note {
                 case "divider": {
                     blocks.push({ blockId, type: "divider" });
                     i++; // Skip ---
+                    break;
+                }
+                case "link": {
+                    let meta: Record<string, string> = {};
+                    try {
+                        meta = JSON.parse(extra || "{}");
+                    } catch { /* ignore parse errors */ }
+                    // Next line is markdown link: [title](url)
+                    const linkLine = lines[i] || "";
+                    const linkMatch = linkLine.match(/^\[([^\]]*)\]\(([^)]+)\)$/);
+                    const url = linkMatch?.[2] || "";
+                    blocks.push({
+                        blockId,
+                        type: "link",
+                        url,
+                        title: meta.title || linkMatch?.[1] || "",
+                        description: meta.description || "",
+                        image: meta.image || "",
+                        domain: meta.domain || "",
+                        favicon: meta.favicon || "",
+                        contentType: (meta.contentType as any) || "generic",
+                    });
+                    i++;
                     break;
                 }
                 default:

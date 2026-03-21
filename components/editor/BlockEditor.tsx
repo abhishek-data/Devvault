@@ -74,7 +74,10 @@ export function BlockEditor({ note, onSave }: BlockEditorProps) {
 
   const saveFromEditor = useCallback(
     async (editorInstance: Editor) => {
-      const blocks = editorContentToBlocks(editorInstance);
+      const editorBlocks = editorContentToBlocks(editorInstance);
+      // Preserve link blocks that are managed outside the editor
+      const linkBlocks = noteRef.current.blocks.filter((b) => b.type === "link");
+      const blocks = [...linkBlocks, ...editorBlocks];
       const now = new Date().toISOString();
       const updated: Note = {
         ...noteRef.current,
@@ -245,7 +248,10 @@ function CodeBlockToolbars({
 }
 
 function noteToEditorContent(note: Note) {
-  if (!note.blocks || note.blocks.length === 0) {
+  // Filter out link blocks — they render as LinkCards outside TipTap
+  const editableBlocks = (note.blocks || []).filter((b) => b.type !== "link");
+
+  if (editableBlocks.length === 0) {
     return {
       type: "doc",
       content: [
@@ -258,7 +264,7 @@ function noteToEditorContent(note: Note) {
     };
   }
 
-  const content = note.blocks.map((block) => {
+  const content = editableBlocks.map((block) => {
     switch (block.type) {
       case "paragraph":
         return {

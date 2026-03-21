@@ -1,6 +1,6 @@
 export type SyncStatus = "local_only" | "synced" | "pending" | "conflict";
 
-export type BlockType = "paragraph" | "heading" | "code" | "divider";
+export type BlockType = "paragraph" | "heading" | "code" | "divider" | "link";
 
 export type NoteType = "note" | "snippet" | "bookmark" | "reference";
 
@@ -39,7 +39,19 @@ export interface DividerBlock {
     type: "divider";
 }
 
-export type Block = ParagraphBlock | HeadingBlock | CodeBlock | DividerBlock;
+export interface LinkBlock {
+    blockId: string;
+    type: "link";
+    url: string;
+    title?: string;
+    description?: string;
+    image?: string;
+    domain?: string;
+    favicon?: string;
+    contentType?: "article" | "youtube" | "github" | "tweet" | "generic";
+}
+
+export type Block = ParagraphBlock | HeadingBlock | CodeBlock | DividerBlock | LinkBlock;
 
 export interface Note {
     id: string;

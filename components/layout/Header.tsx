@@ -8,15 +8,18 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
+  Link2,
 } from "lucide-react";
 import { SyncStatusIndicator } from "@/components/sync/SyncStatusIndicator";
 import { SearchModal } from "@/components/search/SearchModal";
 import { SettingsPanel } from "@/components/layout/SettingsPanel";
+import { QuickCapture } from "@/components/capture/QuickCapture";
 
 export function Header() {
   const { setSearchOpen, isSearchOpen, toggleSidebar, sidebarCollapsed } =
     useDevVaultStore();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [captureOpen, setCaptureOpen] = useState(false);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -57,7 +60,14 @@ export function Header() {
           </button>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setCaptureOpen(true)}
+            className="icon-button hover:bg-[var(--bg-surface)]"
+            title="Quick Capture (⌘⇧L)"
+          >
+            <Link2 className="h-[18px] w-[18px]" />
+          </button>
           <SyncStatusIndicator />
           <button onClick={() => setSettingsOpen(true)} className="icon-button hover:bg-[var(--bg-surface)]">
             <Settings className="h-[18px] w-[18px]" />
@@ -67,6 +77,7 @@ export function Header() {
 
       <SearchModal />
       <SettingsPanel open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <QuickCapture open={captureOpen} onOpenChange={setCaptureOpen} />
     </>
   );
 }
