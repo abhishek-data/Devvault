@@ -1,8 +1,11 @@
 import { toast } from "sonner";
 import { StorageService } from "../db/storage";
+import type { Note } from "../types";
 
 interface QueueItem {
     noteId: string;
+    action: "sync" | "delete";
+    note?: Note; // Stored for deletes since note is removed from DB before queue processes
 }
 
 class SyncQueue {
@@ -12,9 +15,14 @@ class SyncQueue {
 
     add(noteId: string) {
         // Deduplicate — if this note is already queued, don't add again
-        if (!this.queue.some((item) => item.noteId === noteId)) {
-            this.queue.push({ noteId });
+        if (!this.queue.some((item) => item.noteId === noteId && item.action === "sync")) {
+            this.queue.push({ noteId, action: "sync" });
         }
+        this.process();
+    }
+
+    addDelete(note: Note) {
+        this.queue.push({ noteId: note.id, action: "delete", note });
         this.process();
     }
 
@@ -25,6 +33,27 @@ class SyncQueue {
 
         while (this.queue.length > 0 && !this.paused) {
             const item = this.queue.shift()!;
+
+            // Handle delete
+            if (item.action === "delete" && item.note) {
+                try {
+                    const res = await fetch("/api/github/file", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ note: item.note, action: "delete" }),
+                    });
+                    if (res.ok) {
+                        // Successfully deleted from GitHub
+                    } else if (res.status === 404) {
+                        // File already gone from GitHub — that's fine
+                    } else {
+                        toast.error("Failed to delete note from GitHub");
+                    }
+                } catch {
+                    toast.info("Offline — note deleted locally but may persist on GitHub until next sync.");
+                }
+                continue;
+            }
 
             try {
                 // Fetch the full note from IndexedDB

@@ -26,8 +26,7 @@ export function NoteList() {
     activeNoteId,
     setActiveNote,
     setSidebarCollapsed,
-    removeNote,
-    rebuildSearchIndex,
+    deleteNoteWithSync,
     toggleNotePin,
     archiveNote,
     restoreNote,
@@ -55,9 +54,7 @@ export function NoteList() {
     e.stopPropagation();
 
     if (confirmDeleteId === noteId) {
-      await StorageService.deleteNote(noteId);
-      removeNote(noteId);
-      rebuildSearchIndex();
+      await deleteNoteWithSync(noteId);
       setConfirmDeleteId(null);
       toast.success("Note deleted");
 
