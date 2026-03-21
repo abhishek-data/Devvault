@@ -14,6 +14,9 @@ import {
   ExternalLink,
   LogOut,
   GitBranch,
+  Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { toast } from "sonner";
 import { StorageService } from "@/lib/db/storage";
@@ -258,6 +261,8 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
             </div>
           </section>
 
+          <AiSettingsSection />
+
           <section className="pt-4 border-t border-[var(--border-subtle)]">
             <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--red)] mb-4">Danger Zone</div>
             {showDeleteConfirm ? (
@@ -281,5 +286,89 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+function AiSettingsSection() {
+  const { aiProvider, setAiProvider, aiApiKey, setAiApiKey } = useDevVaultStore();
+  const [showKey, setShowKey] = useState(false);
+  const [keyInput, setKeyInput] = useState(aiApiKey);
+
+  const handleSaveKey = () => {
+    setAiApiKey(keyInput.trim());
+    toast.success(keyInput.trim() ? "API key saved" : "API key removed");
+  };
+
+  return (
+    <section>
+      <div className="flex items-center gap-2 mb-4">
+        <Sparkles className="h-4 w-4 text-[var(--accent-bright)]" />
+        <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-tertiary)]">AI Features (Optional)</div>
+      </div>
+
+      <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
+        Bring your own API key to enable AI summarization and auto-tagging. Your key is stored locally and sent directly to the provider — never to our servers.
+      </p>
+
+      {/* Provider */}
+      <div className="mb-3">
+        <label className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5 block">Provider</label>
+        <div className="grid grid-cols-2 gap-2">
+          {(["gemini", "openai"] as const).map((p) => (
+            <button
+              key={p}
+              onClick={() => setAiProvider(p)}
+              className={cn(
+                "h-9 rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide transition-all",
+                aiProvider === p
+                  ? "bg-[var(--accent-muted)] text-white shadow-sm ring-2 ring-[var(--accent-primary)]/20"
+                  : "bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
+              )}
+            >
+              {p === "gemini" ? "Google Gemini" : "OpenAI"}
+            </button>
+          ))}
+        </div>
+        <p className="text-[10px] text-[var(--text-tertiary)] mt-1.5">
+          {aiProvider === "gemini"
+            ? "Gemini Flash has a free tier — 250 requests/day, no credit card needed."
+            : "Requires an OpenAI API key with GPT-4o-mini or GPT-4o access."}
+        </p>
+      </div>
+
+      {/* API Key */}
+      <div>
+        <label className="text-[11px] font-semibold text-[var(--text-secondary)] mb-1.5 block">API Key</label>
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <input
+              type={showKey ? "text" : "password"}
+              value={keyInput}
+              onChange={(e) => setKeyInput(e.target.value)}
+              placeholder={aiProvider === "gemini" ? "AIza..." : "sk-..."}
+              className="w-full h-9 px-3 pr-8 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--accent-primary)] transition-colors font-mono"
+            />
+            <button
+              onClick={() => setShowKey(!showKey)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+            >
+              {showKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            </button>
+          </div>
+          <button
+            onClick={handleSaveKey}
+            className="h-9 px-3 bg-[var(--accent-muted)] hover:bg-[var(--accent-bright)] text-white rounded-[var(--radius-md)] text-[11px] font-bold transition-colors"
+          >
+            Save
+          </button>
+        </div>
+        {aiApiKey && (
+          <p className="text-[10px] text-[var(--green)] mt-1.5 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
+            Key configured
+          </p>
+        )}
+      </div>
+    </section>
   );
 }

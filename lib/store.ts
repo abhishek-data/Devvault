@@ -64,6 +64,12 @@ interface DevVaultStore {
     toggleTheme: () => void;
     syncIntervalMinutes: number;
     setSyncIntervalMinutes: (val: number) => void;
+
+    // AI
+    aiProvider: "gemini" | "openai";
+    setAiProvider: (provider: "gemini" | "openai") => void;
+    aiApiKey: string;
+    setAiApiKey: (key: string) => void;
 }
 
 export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
@@ -214,6 +220,18 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
     setSyncIntervalMinutes: (val) => {
         localStorage.setItem("devvault-sync-interval", String(val));
         set({ syncIntervalMinutes: val });
+    },
+
+    // AI
+    aiProvider: (typeof window !== "undefined" ? (localStorage.getItem("devvault-ai-provider") as "gemini" | "openai") : null) || "gemini",
+    setAiProvider: (provider) => {
+        localStorage.setItem("devvault-ai-provider", provider);
+        set({ aiProvider: provider });
+    },
+    aiApiKey: typeof window !== "undefined" ? (localStorage.getItem("devvault-ai-key") || "") : "",
+    setAiApiKey: (key) => {
+        localStorage.setItem("devvault-ai-key", key);
+        set({ aiApiKey: key });
     },
 }));
 
