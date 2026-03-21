@@ -331,7 +331,7 @@ function AiSettingsSection() {
         </div>
         <p className="text-[10px] text-[var(--text-tertiary)] mt-1.5">
           {aiProvider === "gemini"
-            ? "Gemini Flash has a free tier — 250 requests/day, no credit card needed."
+            ? "Uses Gemini 2.5 Flash — free tier with 250 requests/day, no credit card needed."
             : "Requires an OpenAI API key with GPT-4o-mini or GPT-4o access."}
         </p>
       </div>

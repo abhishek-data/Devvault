@@ -14,49 +14,64 @@ interface SummarizeResponse {
     suggestedTags: string[];
 }
 
+const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
+
 const SYSTEM_PROMPT = `You are a helpful assistant that summarizes content for developers.
-Given the content, produce a structured summary in this exact JSON format:
-{
-  "summary": "A concise 2-3 sentence TL;DR of the content",
-  "keyPoints": ["Key point 1", "Key point 2", "Key point 3", "...up to 5 points"],
-  "suggestedTags": ["tag1", "tag2", "tag3"]
-}
-Rules:
-- Keep the summary under 100 words
-- Key points should be actionable or factual, not vague
-- Suggest 2-4 lowercase tags relevant to the content (e.g. "react", "debugging", "api-design")
-- Return ONLY the JSON, no markdown fencing, no extra text`;
+Given the content, produce a structured summary as JSON with these fields:
+- "summary": A concise 2-3 sentence TL;DR (under 100 words)
+- "keyPoints": Array of 3-5 actionable or factual key points
+- "suggestedTags": Array of 2-4 lowercase tags relevant to the content (e.g. "react", "debugging", "api-design")`;
 
 async function callGemini(apiKey: string, content: string): Promise<SummarizeResponse> {
-    const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [
-                            { text: SYSTEM_PROMPT },
-                            { text: `Content to summarize:\n\n${content.slice(0, 30000)}` },
-                        ],
-                    },
-                ],
-                generationConfig: {
-                    temperature: 0.3,
-                    maxOutputTokens: 1024,
+    const url = `${GEMINI_API_BASE}/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            contents: [
+                {
+                    role: "user",
+                    parts: [
+                        { text: `Content to summarize:\n\n${content.slice(0, 30000)}` },
+                    ],
                 },
-            }),
-        }
-    );
+            ],
+            systemInstruction: {
+                parts: [{ text: SYSTEM_PROMPT }],
+            },
+            generationConfig: {
+                temperature: 0.3,
+                maxOutputTokens: 1024,
+                responseMimeType: "application/json",
+            },
+        }),
+    });
 
     if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error?.message || `Gemini API error: ${res.status}`);
+        const errorText = await res.text().catch(() => "Unknown error");
+        let errorMessage: string;
+        try {
+            const err = JSON.parse(errorText);
+            errorMessage = err.error?.message || `Gemini API error: ${res.status}`;
+        } catch {
+            errorMessage = `Gemini API error: ${res.status} — ${errorText.slice(0, 200)}`;
+        }
+        throw new Error(errorMessage);
     }
 
     const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    if (data.error) {
+        throw new Error(data.error.message || "Gemini API returned an error");
+    }
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+        throw new Error("No text in Gemini response");
+    }
+
     return parseAiResponse(text);
 }
 
