@@ -8,11 +8,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://mydevvault.vercel.a
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "DevVault",
+    default: "DevVault | Local-First Developer Knowledge OS",
     template: "%s | DevVault",
   },
   applicationName: "DevVault",
-  description: "Your developer knowledge OS — local-first, GitHub-synced",
+  description: "DevVault is a local-first developer knowledge OS. Store markdown notes and code snippets securely, then sync seamlessly to your private GitHub repo.",
   keywords: [
     "developer notes",
     "code snippets",
@@ -37,15 +37,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "DevVault",
-    title: "DevVault — Developer Knowledge OS",
-    description:
-      "Store notes and code snippets locally. Sync to your own GitHub repo. Free forever.",
+    title: "DevVault | Local-First Developer Knowledge OS",
+    description: "DevVault is a local-first developer knowledge OS. Store markdown notes and code snippets securely, then sync seamlessly to your private GitHub repo.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DevVault — Developer Knowledge OS",
-    description:
-      "Store notes and code snippets locally. Sync to your own GitHub repo. Free forever.",
+    title: "DevVault | Local-First Developer Knowledge OS",
+    description: "DevVault is a local-first developer knowledge OS. Store markdown notes and code snippets securely, then sync seamlessly to your private GitHub repo.",
   },
   robots: {
     index: true,
@@ -68,15 +66,38 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
 };
 
+import { Analytics } from "@vercel/analytics/react";
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "DevVault",
+    applicationCategory: "DeveloperApplication",
+    operatingSystem: "Web",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description: "DevVault is a local-first developer knowledge OS. Store markdown notes and code snippets securely, then sync seamlessly to your private GitHub repo."
+  };
+
   return (
     <html lang="en" className={`dark ${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );

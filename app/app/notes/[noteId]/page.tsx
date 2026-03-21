@@ -126,24 +126,27 @@ export default function NotePage() {
   return (
     <div className="note-content min-h-[calc(100vh-44px)] bg-[var(--bg-base)]">
       <div className="px-4 sm:px-6 md:px-10 lg:px-[56px] pt-6 sm:pt-7 md:pt-8 lg:pt-[40px] pb-5 sm:pb-6 border-b border-[var(--border-subtle)]">
-        <input
-          type="text"
-          value={note.title}
-          onChange={(e) => handleTitleChange(e.target.value)}
-          placeholder="Untitled"
-          className="w-full bg-transparent border-none outline-none p-0 text-[22px] font-semibold tracking-[-0.4px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
-        />
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3 text-[13px] font-medium text-[var(--text-secondary)]">
+            <span className="flex items-center gap-1"><Vault className="w-4 h-4" />{note.title || "Untitled"}</span>
+            <span className="w-1 h-1 rounded-full bg-[var(--border-strong)] mx-1" />
+            <span className="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg> Edited {new Date(note.updatedAt).toLocaleDateString()}</span>
+          </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-[6px]">
+
+        </div>
+
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           {note.tags.map((tag) => (
             <span
               key={tag}
-              className="tag-enter h-5 px-2 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-[11px] font-medium text-[var(--text-secondary)] inline-flex items-center gap-1 hover:border-[var(--border-strong)] hover:bg-[var(--bg-overlay)]"
+              className="tag-enter h-6 px-3 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-full text-[11px] font-bold tracking-wide text-[var(--accent-bright)] inline-flex items-center gap-1.5 hover:border-[var(--border-strong)] hover:bg-[var(--bg-overlay)]"
             >
               {tag}
               <button
                 onClick={() => handleRemoveTag(tag)}
-                className="text-[var(--text-tertiary)] hover:text-[var(--red)]"
+                className="text-[var(--text-tertiary)] hover:text-[var(--red)] transition-colors"
+                aria-label="Remove tag"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -154,10 +157,18 @@ export default function NotePage() {
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagKeyDown}
-            placeholder="Add tag..."
-            className="bg-transparent border-none outline-none text-[11px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-20"
+            placeholder="+ Add tag"
+            className="bg-transparent border border-dashed border-[var(--border-strong)] rounded-full h-6 px-3 outline-none text-[11px] font-bold tracking-wide text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] w-24 focus:border-[var(--accent-primary)] transition-colors"
           />
         </div>
+
+        <input
+          type="text"
+          value={note.title}
+          onChange={(e) => handleTitleChange(e.target.value)}
+          placeholder="Untitled Note"
+          className="w-full bg-transparent border-none outline-none p-0 text-[clamp(28px,4vw,36px)] font-bold tracking-tight text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+        />
       </div>
 
       <div className="px-4 sm:px-6 md:px-10 lg:px-[56px] pt-6 sm:pt-7 md:pt-8 pb-16 sm:pb-20">

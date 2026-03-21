@@ -66,10 +66,9 @@ export function NoteList() {
         <div
           key={note.id}
           className={cn(
-            "note-item group px-[10px] py-[7px] mx-[6px] rounded-[var(--radius-md)] cursor-pointer",
-            "hover:bg-[var(--bg-overlay)] border-l-2 border-transparent",
+            "note-item group flex flex-col justify-between p-4 mb-3 mx-2 rounded-[var(--radius-lg)] bg-[var(--bg-elevated)] border border-[var(--border-subtle)] cursor-pointer hover:border-[var(--border-strong)] transition-colors shadow-sm",
             activeNoteId === note.id &&
-              "bg-[var(--bg-overlay)] border-l-[var(--accent-primary)] pl-2"
+              "border-[var(--accent-muted)] bg-[var(--bg-overlay)] ring-1 ring-[var(--accent-primary)]/20"
           )}
           onClick={() => {
             setActiveNote(note.id);
@@ -79,41 +78,52 @@ export function NoteList() {
             router.push(`/app/notes/${note.id}`);
           }}
         >
-          <div className="flex items-center gap-2">
-            <span className="text-[13px] font-medium text-[var(--text-primary)] truncate flex-1">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[14px] font-bold tracking-wide text-[var(--text-primary)] truncate">
               {note.title || "Untitled"}
             </span>
-            <span
-              className={cn(
-                "w-[5px] h-[5px] rounded-full flex-shrink-0",
-                syncDotColors[note.syncStatus] || "bg-[var(--sync-local)]"
-              )}
-            />
+            {note.tags[0] && (
+              <span className="tag-pill bg-[var(--bg-overlay)] !border-[var(--border-strong)]">
+                {note.tags[0]}
+              </span>
+            )}
+          </div>
+          
+          <p className="text-[13px] leading-relaxed text-[var(--text-secondary)] line-clamp-2 mb-3">
+             {note.blocks.find(b => b.type === 'paragraph' && 'text' in b)?.['text'] || "Start writing your next idea..."}
+          </p>
+
+          <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center gap-3">
+               <span className="text-[11px] font-medium text-[var(--text-tertiary)] flex items-center gap-1">
+                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                 {new Date(note.updatedAt).toLocaleDateString()}
+               </span>
+               <div className="flex items-center gap-1.5 opacity-80">
+                  <span
+                    className={cn(
+                      "w-2 h-2 rounded-full",
+                      syncDotColors[note.syncStatus] || "bg-[var(--sync-local)]"
+                    )}
+                  />
+                  <span className="text-[11px] font-medium text-[var(--text-tertiary)] capitalize">{note.syncStatus.replace('_', ' ')}</span>
+               </div>
+            </div>
+
             <button
               onClick={(e) => handleDelete(note.id, e)}
               className={cn(
-                "icon-button !w-7 !h-7 flex-shrink-0",
+                "icon-button !w-6 !h-6 flex-shrink-0 transition-opacity",
                 confirmDeleteId === note.id
                   ? "opacity-100 text-[var(--red)] bg-[rgba(248,113,113,0.08)]"
-                  : "opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                  : "opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
               )}
               title={
                 confirmDeleteId === note.id ? "Click again to confirm" : "Delete note"
               }
             >
-              <Trash2 className="h-3.5 w-3.5" />
+              <Trash2 className="h-3 w-3" />
             </button>
-          </div>
-
-          <div className="flex items-center gap-[6px] mt-[3px]">
-            <span className="text-[11px] text-[var(--text-tertiary)]">
-              {new Date(note.updatedAt).toLocaleDateString()}
-            </span>
-            {note.tags.slice(0, 2).map((tag) => (
-              <span key={tag} className="tag-pill !h-[16px] !px-[6px] !text-[10px]">
-                {tag}
-              </span>
-            ))}
           </div>
 
           {confirmDeleteId === note.id && (

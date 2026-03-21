@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { StorageService } from "@/lib/db/storage";
+import { cn } from "@/lib/utils";
 
 interface SettingsPanelProps {
   open: boolean;
@@ -114,153 +115,170 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[80]">
-      <div className="absolute inset-0 bg-[rgba(4,4,12,0.5)]" onClick={() => onOpenChange(false)} />
-      <div className="absolute right-0 top-0 bottom-0 w-full sm:max-w-[320px] md:max-w-[360px] bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] overflow-y-auto translate-x-0 transition-transform duration-300">
-        <div className="h-[44px] px-4 border-b border-[var(--border-subtle)] flex items-center justify-between">
-          <h2 className="text-[13px] font-semibold text-[var(--text-primary)]">Settings</h2>
-          <button onClick={() => onOpenChange(false)} className="icon-button">
-            <X className="h-4 w-4" />
+    <div className="fixed inset-0 z-[110]">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => onOpenChange(false)} />
+      <div className="absolute right-0 top-0 bottom-0 w-full sm:max-w-[360px] bg-[var(--bg-surface)] border-l border-[var(--border-subtle)] overflow-y-auto translate-x-0 transition-transform duration-300 shadow-2xl">
+        <div className="h-[64px] px-6 border-b border-[var(--border-subtle)] flex items-center justify-between">
+          <h2 className="text-[15px] font-bold tracking-wide text-[var(--text-primary)]">Settings</h2>
+          <button onClick={() => onOpenChange(false)} className="icon-button hover:bg-[var(--bg-elevated)]">
+            <X className="h-5 w-5" />
           </button>
         </div>
 
-        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-3">Account</div>
-          {isGitHubConnected && session ? (
-            <>
-              <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-[14px] flex items-center gap-3 mb-4">
-                {session.user?.image ? (
-                  <img
-                    src={session.user.image}
-                    alt="avatar"
-                    className="w-9 h-9 rounded-full border-2 border-[var(--border-default)]"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full border-2 border-[var(--border-default)] bg-[var(--bg-overlay)]" />
-                )}
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold text-[var(--text-primary)] truncate">{session.user?.name || username}</p>
-                  <p className="text-[11px] text-[var(--text-tertiary)]">@{username || "github-user"}</p>
+        <div className="p-6 space-y-8">
+          <section>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-4">Account</div>
+            {isGitHubConnected && session ? (
+              <div className="space-y-4">
+                <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-4 flex items-center gap-4 shadow-sm">
+                  {session.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt="avatar"
+                      className="w-10 h-10 rounded-full ring-2 ring-[var(--border-strong)]"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full ring-2 ring-[var(--border-strong)] bg-[var(--bg-overlay)]" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[14px] font-bold text-[var(--text-primary)] truncate">{session.user?.name || username}</p>
+                    <p className="text-[12px] text-[var(--text-secondary)]">@{username || "github-user"}</p>
+                  </div>
+                  {username && (
+                    <a
+                      href={`https://github.com/${username}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[var(--text-tertiary)] hover:text-[var(--accent-primary)] transition-colors p-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
                 </div>
-                {username && (
-                  <a
-                    href={`https://github.com/${username}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="ml-auto text-[var(--text-tertiary)] hover:text-[var(--text-accent)]"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                )}
-              </div>
 
-              <div className="flex items-center justify-between py-[10px] border-b border-[var(--border-subtle)]">
-                <div className="inline-flex items-center">
-                  <GitBranch className="h-3.5 w-3.5 text-[var(--text-tertiary)]" />
-                  <span className="text-[12px] text-[var(--text-secondary)] ml-1.5">devvault-notes</span>
+                <div className="flex items-center justify-between bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-4 shadow-sm">
+                  <div className="inline-flex items-center">
+                    <GitBranch className="h-4 w-4 text-[var(--accent-primary)]" />
+                    <span className="text-[13px] font-medium text-[var(--text-secondary)] ml-2">devvault-notes</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 bg-[var(--sync-synced)]/10 rounded-full border border-[var(--sync-synced)]/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--sync-synced)] animate-pulse" />
+                    <span className="text-[11px] font-bold tracking-wide text-[var(--sync-synced)] uppercase">Connected</span>
+                  </div>
                 </div>
-                <div className="inline-flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--green)]" />
-                  <span className="text-[11px] text-[var(--green)]">Connected</span>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                   <button onClick={handleSync} className="h-9 w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide text-[var(--text-primary)] inline-flex items-center justify-center gap-2 hover:bg-[var(--bg-overlay)] hover:border-[var(--border-strong)] transition-all shadow-sm">
+                     <RefreshCw className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                     Sync Now
+                   </button>
+                   {username && (
+                     <a
+                       href={`https://github.com/${username}/devvault-notes`}
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       className="h-9 w-full bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide text-[var(--text-primary)] inline-flex items-center justify-center gap-2 hover:bg-[var(--bg-overlay)] hover:border-[var(--border-strong)] transition-all shadow-sm"
+                     >
+                       <ExternalLink className="h-3.5 w-3.5 text-[var(--text-secondary)]" />
+                       View Repo
+                     </a>
+                   )}
                 </div>
-              </div>
 
-              <button onClick={handleSync} className="btn-ghost w-full mt-[10px] inline-flex items-center justify-center gap-1.5">
-                <RefreshCw className="h-3 w-3" />
-                Sync now
-              </button>
-
-              {username && (
-                <a
-                  href={`https://github.com/${username}/devvault-notes`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-ghost w-full mt-2 inline-flex items-center justify-center gap-1.5"
+                <button
+                  onClick={() => {
+                    signOut({ callbackUrl: "/" });
+                    setGitHubConnected(false);
+                  }}
+                  className="w-full h-10 mt-2 bg-transparent text-[var(--red)] border border-transparent hover:bg-[var(--red)]/10 rounded-[var(--radius-md)] text-[13px] font-semibold flex items-center justify-center gap-2 transition-colors"
                 >
-                  <ExternalLink className="h-3 w-3" />
-                  View your notes repo
-                </a>
-              )}
-
-              <button
-                onClick={() => {
-                  signOut({ callbackUrl: "/" });
-                  setGitHubConnected(false);
-                }}
-                className="btn-ghost btn-destructive w-full mt-2 inline-flex items-center justify-center gap-1.5"
-              >
-                <LogOut className="h-3 w-3" />
-                Sign out
-              </button>
-            </>
-          ) : (
-            <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-4">
-              <p className="text-[12px] text-[var(--text-secondary)] mb-3">Not connected</p>
-              <button onClick={() => signIn("github", { callbackUrl: "/app" })} className="btn-primary w-full inline-flex items-center justify-center gap-2">
-                <Github className="h-3.5 w-3.5" />
-                Sign in with GitHub
-              </button>
-            </div>
-          )}
-        </section>
-
-        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-3">Appearance</div>
-          <button onClick={toggleTheme} className="btn-ghost w-full inline-flex items-center justify-center gap-2">
-            <Contrast className="h-3.5 w-3.5" />
-            Theme: {theme}
-          </button>
-        </section>
-
-        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-2 inline-flex items-center gap-1.5">
-            <Clock className="h-3.5 w-3.5" />
-            Auto Sync
-          </div>
-          <p className="text-[11px] text-[var(--text-tertiary)] mb-3">
-            How often to push notes to GitHub.
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            {INTERVAL_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => {
-                  setSyncIntervalMinutes(opt.value);
-                  toast.success(opt.value === 0 ? "Auto-sync disabled" : `Auto-sync set to every ${opt.label}`);
-                }}
-                className={syncIntervalMinutes === opt.value ? "btn-primary" : "btn-ghost"}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="px-4 py-5 border-b border-[var(--border-subtle)]">
-          <div className="section-label mb-3">Storage</div>
-          <p className="text-[12px] text-[var(--text-secondary)] inline-flex items-center gap-1.5">
-            <HardDrive className="h-3.5 w-3.5" />
-            {storageEstimate}
-          </p>
-        </section>
-
-        <section className="px-4 py-5">
-          <div className="section-label mb-3 text-[var(--red)]">Danger Zone</div>
-          {showDeleteConfirm ? (
-            <div className="space-y-2">
-              <p className="text-[12px] text-[var(--text-secondary)]">Permanently delete all local notes?</p>
-              <div className="flex gap-2">
-                <button onClick={handleDeleteAll} className="btn-primary bg-[var(--red)] hover:bg-[var(--red)]">Delete all</button>
-                <button onClick={() => setShowDeleteConfirm(false)} className="btn-ghost">Cancel</button>
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </button>
               </div>
+            ) : (
+              <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-6 text-center shadow-sm">
+                <Github className="h-8 w-8 mx-auto mb-3 text-[var(--text-tertiary)]" />
+                <p className="text-[13px] text-[var(--text-secondary)] mb-4">You are currently operating in local-only mode.</p>
+                <button onClick={() => signIn("github", { callbackUrl: "/app" })} className="w-full h-10 bg-[var(--accent-muted)] hover:bg-[var(--accent-bright)] text-white rounded-[var(--radius-md)] text-[13px] font-semibold flex items-center justify-center gap-2 transition-colors">
+                   <Github className="h-4 w-4" />
+                   Sign in with GitHub
+                </button>
+              </div>
+            )}
+          </section>
+
+          <section>
+             <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-4">Appearance</div>
+             <button onClick={toggleTheme} className="w-full h-10 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] text-[13px] font-semibold text-[var(--text-primary)] hover:border-[var(--border-strong)] transition-colors flex items-center justify-center gap-2 shadow-sm">
+               <Contrast className="h-4 w-4" />
+               Current Theme: {theme.charAt(0).toUpperCase() + theme.slice(1)}
+             </button>
+          </section>
+
+          <section>
+            <div className="flex items-center gap-2 mb-2 text-[var(--text-primary)]">
+              <Clock className="h-4 w-4" />
+              <div className="text-[13px] font-bold tracking-wide">Auto Sync Interval</div>
             </div>
-          ) : (
-            <button onClick={() => setShowDeleteConfirm(true)} className="btn-ghost btn-destructive inline-flex items-center gap-1.5">
-              <Trash2 className="h-3.5 w-3.5" />
-              Delete all local notes
-            </button>
-          )}
-        </section>
+            <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
+              Choose how frequently DevVault automatically pushes changes to GitHub.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {INTERVAL_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => {
+                    setSyncIntervalMinutes(opt.value);
+                    toast.success(opt.value === 0 ? "Auto-sync disabled" : `Auto-sync set to every ${opt.label}`);
+                  }}
+                  className={cn(
+                     "h-9 rounded-[var(--radius-md)] text-[11px] font-bold uppercase tracking-wider transition-all",
+                     syncIntervalMinutes === opt.value
+                       ? "bg-[var(--accent-muted)] text-white shadow-sm ring-2 ring-[var(--accent-primary)]/20"
+                       : "bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                  )}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-tertiary)] mb-4">Storage Breakdown</div>
+            <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-4 flex items-center gap-3 shadow-sm">
+               <div className="w-10 h-10 rounded-full bg-[var(--bg-overlay)] flex items-center justify-center text-[var(--text-secondary)]">
+                  <HardDrive className="h-5 w-5" />
+               </div>
+               <div>
+                 <p className="text-[13px] font-bold text-[var(--text-primary)]">Local Storage Limit</p>
+                 <p className="text-[12px] text-[var(--text-secondary)] mt-0.5">{storageEstimate}</p>
+               </div>
+            </div>
+          </section>
+
+          <section className="pt-4 border-t border-[var(--border-subtle)]">
+            <div className="text-[11px] font-bold uppercase tracking-widest text-[var(--red)] mb-4">Danger Zone</div>
+            {showDeleteConfirm ? (
+              <div className="bg-[var(--red)]/10 border border-[var(--red)]/20 rounded-[var(--radius-lg)] p-4 text-center">
+                <p className="text-[13px] font-medium text-[var(--red)] mb-4">This action cannot be undone. Wipe all local data?</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={handleDeleteAll} className="h-9 bg-[var(--red)] text-white rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide hover:bg-[var(--red)]/90 transition-colors shadow-sm">Delete</button>
+                  <button onClick={() => setShowDeleteConfirm(false)} className="h-9 bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide hover:bg-[var(--bg-overlay)] transition-colors shadow-sm">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button 
+                onClick={() => setShowDeleteConfirm(true)} 
+                className="w-full h-[44px] bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] text-[13px] font-semibold text-[var(--red)] flex items-center justify-center gap-2 hover:bg-[var(--red)]/5 hover:border-[var(--red)]/30 transition-colors shadow-sm"
+              >
+                <Trash2 className="h-4 w-4" />
+                Wipe Local Storage
+              </button>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );

@@ -36,44 +36,31 @@ export function Header() {
   return (
     <>
       <header
-        className="h-[44px] border-b border-[var(--border-subtle)] backdrop-blur-[12px] backdrop-saturate-[180%] flex items-center justify-between px-3 sm:px-4 md:px-5 fixed top-0 left-0 right-0 z-[100]"
-        style={{ background: "var(--header-bg)" }}
+        className="h-[64px] flex items-center justify-between px-6 sticky top-0 z-[50] bg-[var(--bg-base)] border-b border-[var(--border-subtle)]"
       >
-        <div className="flex items-center gap-2 min-w-0">
-          <button
-            onClick={toggleSidebar}
-            className="icon-button"
-            title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        <div className="flex-1 flex items-center gap-3 justify-center lg:justify-start">
+          <button 
+            onClick={() => toggleSidebar()} 
+            className="icon-button hover:bg-[var(--bg-surface)] flex"
+            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {sidebarCollapsed ? (
-              <PanelLeftOpen className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
+            {sidebarCollapsed ? <PanelLeftOpen className="h-[18px] w-[18px]" /> : <PanelLeftClose className="h-[18px] w-[18px]" />}
           </button>
-          <Vault className="h-6 w-6 text-[var(--accent-primary)]" />
-          <span className="text-[14px] font-semibold text-[var(--text-primary)] hidden sm:inline">
-            DevVault
-          </span>
+
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="flex w-full max-w-[400px] h-[36px] bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-md)] px-3 items-center gap-[8px] hover:border-[var(--border-strong)] transition-colors"
+          >
+            <Search className="h-[14px] w-[14px] text-[var(--text-secondary)]" />
+            <span className="text-[13px] text-[var(--text-secondary)]">Search notes...</span>
+            <kbd className="ml-auto hidden md:inline-block border-none bg-transparent text-[11px] text-[var(--text-tertiary)]">⌘K</kbd>
+          </button>
         </div>
 
-        <button
-          onClick={() => setSearchOpen(true)}
-          className="hidden sm:flex w-[170px] md:w-[220px] lg:w-[260px] h-7 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] px-[10px] items-center gap-[6px] hover:border-[var(--border-strong)] hover:bg-[var(--bg-overlay)]"
-        >
-          <Search className="h-[13px] w-[13px] text-[var(--text-tertiary)]" />
-          <span className="text-[12px] text-[var(--text-tertiary)] truncate">Search...</span>
-          <kbd className="ml-auto hidden md:inline-block">⌘K</kbd>
-        </button>
-        <button onClick={() => setSearchOpen(true)} className="icon-button sm:hidden">
-          <Search className="h-4 w-4" />
-        </button>
-
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-4">
           <SyncStatusIndicator />
-          <div className="w-px h-4 bg-[var(--border-default)]" />
-          <button onClick={() => setSettingsOpen(true)} className="icon-button">
-            <Settings className="h-4 w-4" />
+          <button onClick={() => setSettingsOpen(true)} className="icon-button hover:bg-[var(--bg-surface)]">
+            <Settings className="h-[18px] w-[18px]" />
           </button>
         </div>
       </header>

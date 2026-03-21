@@ -1,0 +1,13 @@
+# DevVault
+DevVault is a privacy-focused, local-first developer knowledge operating system and snippet manager.
+
+## Features
+- Store markdown notes and code snippets securely on your local device.
+- Sync seamlessly to your private GitHub repository for secure backup and version control.
+- Designed strictly for developers, built with Next.js, React, and TailwindCSS.
+- Offers rich text editing via TipTap.
+- Completely free and open-source.
+
+## Access
+Login requires GitHub authentication to allow repository synchronization.
+Site URL: https://mydevvault.vercel.app

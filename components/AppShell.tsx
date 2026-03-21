@@ -76,25 +76,22 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <Header />
-      <div className="flex pt-[44px] bg-[var(--bg-base)]">
+      <div className="flex h-screen bg-[var(--bg-base)] overflow-hidden">
         <Sidebar />
         {!sidebarCollapsed && (
           <button
             type="button"
             aria-label="Close sidebar"
             onClick={() => setSidebarCollapsed(true)}
-            className="md:hidden fixed top-[44px] inset-x-0 bottom-0 z-30 bg-black/45"
+            className="md:hidden fixed inset-0 z-30 bg-black/45"
           />
         )}
-        <main
-          className={cn(
-            "flex-1 min-h-[calc(100vh-44px)] transition-[margin] duration-200 bg-[var(--bg-base)]",
-            sidebarCollapsed ? "ml-0" : "ml-0 md:ml-[220px] lg:ml-[240px]"
-          )}
-        >
-          {children}
-        </main>
+        <div className="flex-1 flex flex-col h-full relative overflow-hidden">
+          <Header />
+          <main className="flex-1 overflow-y-auto">
+            {children}
+          </main>
+        </div>
       </div>
       <ConflictModal />
       <Toaster

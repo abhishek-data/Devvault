@@ -81,15 +81,14 @@ export function SearchModal() {
       }}
     >
       <div
-        className="fixed top-[10%] sm:top-[16%] lg:top-[20%] left-1/2 w-[560px] md:w-[620px] max-w-[calc(100vw-24px)] max-h-[70vh] sm:max-h-[480px] -translate-x-1/2 bg-[var(--bg-elevated)] border border-[var(--border-strong)] rounded-[var(--radius-xl)] overflow-hidden"
+        className="fixed top-[10%] sm:top-[16%] lg:top-[20%] left-1/2 w-[560px] md:w-[620px] max-w-[calc(100vw-24px)] max-h-[70vh] sm:max-h-[480px] -translate-x-1/2 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-[var(--radius-xl)] overflow-hidden shadow-2xl"
         style={{
           animation: "slideDown 180ms cubic-bezier(0.16,1,0.3,1)",
-          boxShadow:
-            "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.1)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.3)",
         }}
       >
-        <div className="px-4 py-[14px] flex items-center gap-[10px] border-b border-[var(--border-subtle)]">
-          <Search className="h-4 w-4 text-[var(--text-tertiary)]" />
+        <div className="px-5 py-4 flex items-center gap-[12px] border-b border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
+          <Search className="h-5 w-5 text-[var(--accent-primary)]" />
           <input
             ref={inputRef}
             type="text"
@@ -97,18 +96,18 @@ export function SearchModal() {
             onChange={(e) => handleInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Search notes, code, tags..."
-            className="flex-1 bg-transparent border-none outline-none text-[14px] font-normal text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
+            className="flex-1 bg-transparent border-none outline-none text-[15px] font-medium tracking-wide text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
           />
-          <span className="text-[11px] text-[var(--text-tertiary)]">
-            <kbd>Esc</kbd>
-          </span>
+          <kbd className="h-6 px-2 bg-[var(--bg-overlay)] border border-[var(--border-default)] rounded-[var(--radius-sm)] text-[11px] font-bold text-[var(--text-secondary)] flex items-center justify-center shadow-sm">
+            ESC
+          </kbd>
         </div>
 
-        <div className="p-[6px] overflow-y-auto max-h-[380px]">
+        <div className="p-[6px] overflow-y-auto max-h-[380px] bg-[var(--bg-surface)]">
           {query.trim() && results.length === 0 && (
-            <div className="py-10 px-5 text-center text-[13px] text-[var(--text-tertiary)] flex flex-col items-center gap-2">
-              <Search className="h-6 w-6 opacity-40" />
-              <p>No results found</p>
+            <div className="py-12 px-5 text-center text-[13px] text-[var(--text-tertiary)] flex flex-col items-center gap-3">
+              <Search className="h-8 w-8 opacity-20 text-[var(--text-secondary)]" />
+              <p className="font-medium tracking-wide">No results found for "{query}"</p>
             </div>
           )}
           {results.map((result, idx) => (

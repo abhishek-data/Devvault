@@ -1,6 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import {
   Vault,
   Github,
@@ -33,266 +34,299 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-base)] text-[var(--text-primary)] overflow-x-hidden scroll-smooth">
+    <div className="min-h-screen bg-[#000000] text-[#FFFFFF] overflow-x-hidden scroll-smooth selection:bg-[var(--accent-dim)] selection:text-[var(--text-accent)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <header className="fixed top-0 inset-x-0 h-14 bg-[rgba(8,8,16,0.8)] backdrop-blur-[12px] border-b border-[var(--border-subtle)] z-[100]">
-        <div
-          className="h-full flex items-center justify-between"
-          style={{ paddingInline: "max(24px, calc((100vw - 1100px) / 2))" }}
-        >
-          <div className="flex items-center gap-2">
-            <Vault className="h-7 w-7 text-[var(--accent-primary)]" />
-            <span className="text-[15px] font-semibold text-[var(--text-primary)]">DevVault</span>
+
+      {/* Visily Styled Header */}
+      <header className="fixed top-0 inset-x-0 h-16 bg-[#000000]/80 backdrop-blur-[16px] border-b border-[#1C1C24] z-[100] flex items-center">
+        <div className="w-full max-w-[1200px] mx-auto px-6 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Vault className="h-6 w-6 text-[#8B5CF6]" />
+            <span className="text-[16px] font-bold tracking-tight">DevVault</span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[var(--text-secondary)]">
-            <a href="#features" className="hover:text-[var(--text-primary)]">Features</a>
-            <a href="#how-it-works" className="hover:text-[var(--text-primary)]">How it works</a>
-            <a href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer" className="hover:text-[var(--text-primary)]">GitHub</a>
+          <nav className="hidden md:flex items-center gap-8 text-[13px] font-semibold text-[#8F91A2]">
+            <a href="#features" className="hover:text-[#FFFFFF] transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-[#FFFFFF] transition-colors">How it works</a>
+            <Link href="/docs" className="hover:text-[#FFFFFF] transition-colors">Docs</Link>
+            <a href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer" className="hover:text-[#FFFFFF] transition-colors inline-flex items-center gap-1">
+              GitHub <ExternalLink className="h-3 w-3" />
+            </a>
           </nav>
 
           <button
             onClick={() => signIn("github", { callbackUrl: "/app" })}
-            className="h-[34px] px-4 bg-white rounded-[var(--radius-md)] text-[13px] font-semibold text-[#0D0D0D] inline-flex items-center gap-2 hover:bg-[rgba(255,255,255,0.88)]"
+            className="h-[36px] px-4 bg-[#FFFFFF] rounded-full text-[13px] font-bold text-[#000000] inline-flex items-center gap-2 hover:bg-[#E2E2E2] transition-colors shadow-sm"
           >
             <Github className="h-4 w-4" />
-            <span className="hidden sm:inline">Sign in with GitHub</span>
-            <span className="sm:hidden">Sign in</span>
+            <span>Sign in with GitHub</span>
           </button>
         </div>
       </header>
 
-      <section className="pt-40 pb-[100px] text-center max-w-[720px] mx-auto px-6">
-        <div className="inline-flex items-center gap-2 bg-[var(--accent-dim)] border border-[var(--accent-muted)] rounded-full px-[14px] py-1 text-[11px] font-semibold text-[var(--text-accent)] tracking-[0.5px] uppercase mb-7" style={{ animation: "fadeUp 400ms ease both" }}>
-          Free forever · Your data stays in your GitHub
-        </div>
+      {/* Visily Hero Section (Split Layout: Left Text, Right Mockup) */}
+      <section className="relative pt-36 pb-20 max-w-[1200px] mx-auto px-6 overflow-hidden">
+        {/* Violet Background Glow */}
+        <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] bg-[#6D28D9]/10 filter blur-[100px] rounded-full -z-10" />
 
-        <h1 className="text-[clamp(36px,6vw,62px)] font-semibold tracking-[-1.5px] leading-[1.1] text-[var(--text-primary)] mb-5" style={{ animation: "fadeUp 400ms 80ms ease both" }}>
-          Your developer
-          <br />
-          <span className="text-[var(--text-accent)]">knowledge</span> OS
-        </h1>
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8">
 
-        <p className="text-[16px] font-normal leading-[1.7] text-[var(--text-secondary)] max-w-[480px] mx-auto mb-9" style={{ animation: "fadeUp 400ms 160ms ease both" }}>
-          Store structured notes and code snippets.
-          <br />
-          Sync everything to your own private GitHub repo.
-          <br />
-          Search across everything in milliseconds.
-        </p>
+          {/* Left Column: Content */}
+          <div className="flex-1 text-left max-w-[560px]">
+            <div className="inline-flex items-center gap-2 bg-[#0C0C12] border border-[#1C1C24] rounded-full px-4 py-1.5 text-[12px] font-bold text-[#A78BFA] tracking-wide mb-6 shadow-sm">
+              Free forever • Your data stays in your GitHub
+            </div>
 
-        <button
-          onClick={() => signIn("github", { callbackUrl: "/app" })}
-          className="h-11 px-7 bg-[var(--accent-primary)] rounded-[var(--radius-md)] text-[14px] font-semibold text-white inline-flex items-center gap-2.5 hover:bg-[var(--accent-bright)] hover:-translate-y-[1px]"
-          style={{ boxShadow: "none", animation: "fadeUp 400ms 240ms ease both" }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = "0 8px 24px rgba(124, 58, 237, 0.35)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.boxShadow = "none";
-          }}
-        >
-          <Github className="h-[18px] w-[18px]" />
-          Sign in with GitHub
-        </button>
+            <h1 className="text-[clamp(38px,5vw,62px)] font-black tracking-[-1.5px] leading-[1.02] text-[#FFFFFF] mb-5">
+              Your developer
+              <br />
+              <span className="bg-gradient-to-r from-[#38BDF8] via-[#818CF8] to-[#C084FC] bg-clip-text text-transparent">knowledge</span>
+              <br />
+              OS
+            </h1>
 
-        <div className="mt-4 text-[12px] text-[var(--text-tertiary)] flex items-center gap-1.5 justify-center" style={{ animation: "fadeUp 400ms 320ms ease both" }}>
-          <Lock className="h-3 w-3" />
-          We never store your data. Notes live in your GitHub repo.
-        </div>
-      </section>
+            <p className="text-[15px] font-medium leading-[1.7] text-[#8F91A2] max-w-[460px] mb-8">
+              Store structured notes and code snippets. Sync everything to your own private GitHub repo. Search across everything in milliseconds.
+            </p>
 
-      <section className="px-6 pb-[100px] max-w-[1100px] mx-auto" style={{ animation: "fadeUp 500ms 400ms ease both" }}>
-        <div
-          className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-xl)] overflow-hidden"
-          style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(124,58,237,0.08)" }}
-        >
-          <div className="h-[38px] bg-[var(--bg-elevated)] border-b border-[var(--border-subtle)] px-[14px] flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-[#FF5F57] opacity-60" />
-            <span className="h-2 w-2 rounded-full bg-[#FEBC2E] opacity-60" />
-            <span className="h-2 w-2 rounded-full bg-[#28C840] opacity-60" />
-            <div className="ml-3 h-[22px] w-[240px] bg-[var(--bg-overlay)] border border-[var(--border-subtle)] rounded-[var(--radius-sm)] px-[10px] text-[11px] text-[var(--text-tertiary)] flex items-center">
-              mydevvault.vercel.app
+            <div className="flex flex-wrap items-center gap-4 mb-12">
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/app" })}
+                className="h-11 px-8 bg-[#FFFFFF] hover:bg-[#E2E2E2] rounded-xl text-[14px] font-extrabold text-[#000000] inline-flex items-center gap-2 transition-all hover:scale-[1.02] shadow-[0_4px_20px_rgba(255,255,255,0.15)]"
+              >
+                Get Started for Free
+              </button>
+              <button
+                onClick={() => signIn("github", { callbackUrl: "/app" })}
+                className="h-11 px-6 bg-[#030304] border border-[#1C1C24] hover:border-[#3C3C4A] rounded-xl text-[14px] font-bold text-[#FFFFFF] inline-flex items-center gap-2 transition-all"
+              >
+                <Github className="h-4 w-4" />
+                Sign in with GitHub
+              </button>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[12px] font-medium text-[#6F7182]">
+              <Lock className="h-3.5 w-3.5" />
+              <span>We never store your data. Notes live in your GitHub.</span>
             </div>
           </div>
 
-          <div className="h-[480px] flex">
-            <div className="w-[200px] bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] p-2.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-12 rounded-[var(--radius-md)] px-[10px] py-2 mb-0.5 ${i === 0 ? "bg-[var(--bg-overlay)] border-l-2 border-[var(--accent-primary)]" : ""}`}
-                >
-                  <div className="h-2.5 rounded bg-[var(--bg-overlay)] w-[80%] mb-2" />
-                  <div className="h-2 rounded bg-[var(--bg-overlay)] w-[55%]" />
-                </div>
-              ))}
-            </div>
+          {/* Right Column: Visual Mockup for Dashboard preview */}
+          <div className="flex-1 w-full max-w-[600px] lg:max-w-[560px]">
+            <div className="w-full aspect-[4/3] bg-[#0A0A0E] border border-[#1C1C24] rounded-2xl shadow-[0_32px_80px_rgba(0,0,0,0.8)] overflow-hidden relative group">
+              {/* Embedded Glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#8B5CF6]/5 via-transparent to-[#38BDF8]/5 opacity-80" />
 
-            <div className="flex-1 bg-[var(--bg-base)] p-8 md:p-10">
-              <div className="h-6 w-[60%] rounded bg-[var(--bg-elevated)]" />
-              <div className="mt-3 flex gap-2">
-                <div className="h-5 w-16 rounded-full bg-[var(--bg-elevated)]" />
-                <div className="h-5 w-20 rounded-full bg-[var(--bg-elevated)]" />
+              {/* Top bar mockup wrapper support */}
+              <div className="h-10 bg-[#12121A] border-b border-[#1C1C24] flex items-center px-4 gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-[#EF4444]/60" />
+                <span className="h-2 w-2 rounded-full bg-[#F59E0B]/60" />
+                <span className="h-2 w-2 rounded-full bg-[#10B981]/60" />
+                <div className="ml-4 h-5 px-3 bg-[#1C1C24] border border-[#2A2A35] rounded font-mono text-[9px] text-[#6F7182] flex items-center">
+                  localhost:3000/app
+                </div>
               </div>
 
-              <div className="mt-6 space-y-2">
-                <div className="h-3 w-[90%] rounded bg-[var(--bg-elevated)]" />
-                <div className="h-3 w-[74%] rounded bg-[var(--bg-elevated)]" />
-                <div className="h-3 w-[82%] rounded bg-[var(--bg-elevated)]" />
-              </div>
-
-              <div className="mt-6 bg-[#0C0C18] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden">
-                <div className="h-8 bg-[#0F0F1E] border-b border-[var(--border-subtle)] px-3.5 flex items-center gap-2">
-                  <span className="h-2 w-2 rounded-full bg-[#FF5F57] opacity-60" />
-                  <span className="h-2 w-2 rounded-full bg-[#FEBC2E] opacity-60" />
-                  <span className="h-2 w-2 rounded-full bg-[#28C840] opacity-60" />
-                  <div className="ml-3 h-4 w-14 rounded bg-[#2D2D4A]" />
+              <div className="flex h-[calc(100%-40px)]">
+                {/* Mock Sidebar */}
+                <div className="w-36 bg-[#09090C] border-r border-[#1C1C24] p-2 space-y-1.5 opacity-80">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className={`h-8 rounded px-2.5 flex items-center ${i === 0 ? "bg-[#1C1C24] border-l-2 border-[#8B5CF6]" : "bg-transparent"}`}>
+                      <div className={`h-1.5 rounded w-full ${i === 0 ? "bg-[#FFFFFF]" : "bg-[#6F7182] opacity-40"}`} />
+                    </div>
+                  ))}
                 </div>
-                <div className="p-[14px] px-4 space-y-[10px]">
-                  <div className="h-2.5 w-[70%] rounded bg-[#2D2D4A]" />
-                  <div className="h-2.5 w-[45%] rounded bg-[#2A1F4A]" />
-                  <div className="h-2.5 w-[60%] rounded bg-[#2D2D4A]" />
-                  <div className="h-2.5 w-[30%] rounded bg-[#2D2D4A]" />
+                {/* Mock Content area dashboard grids */}
+                <div className="flex-1 bg-[#050507] p-5 space-y-4 flex flex-col justify-start">
+                  <div className="h-5 bg-[#1C1C24] rounded-md w-[40%]" />
+                  <div className="flex gap-1.5">
+                    <div className="h-4 w-12 rounded-full bg-[#12121C] border border-[#1C1C24]" />
+                    <div className="h-4 w-16 rounded-full bg-[#12121C] border border-[#1C1C24]" />
+                  </div>
+                  <div className="space-y-2 mt-2">
+                    <div className="h-2.5 bg-[#1C1C24] rounded w-[90%] opacity-60" />
+                    <div className="h-2.5 bg-[#1C1C24] rounded w-[70%] opacity-60" />
+                    <div className="h-2.5 bg-[#1C1C24] rounded w-[80%] opacity-60" />
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 flex-1 h-full overflow-hidden">
+                    <div className="bg-[#0C0C14] border border-[#1C1C24] rounded-xl p-3 flex flex-col gap-2 relative">
+                      <div className="h-3 bg-[#1C1C24] rounded w-10" />
+                      <div className="h-2 bg-[#1C1C24] rounded w-full opacity-40" />
+                      <div className="h-2 bg-[#1C1C24] rounded w-[60%] opacity-40" />
+                    </div>
+                    <div className="bg-[#0C0C14] border border-[#1C1C24] rounded-xl p-3 flex flex-col gap-2 opacity-50">
+                      <div className="h-3 bg-[#1C1C24] rounded w-8" />
+                      <div className="h-2 bg-[#1C1C24] rounded w-full" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
-      <section
-        id="how-it-works"
-        className="py-[100px] px-6 max-w-[900px] mx-auto text-center"
-        style={{ animation: "fadeUp 500ms 520ms ease both" }}
-      >
-        <div className="text-[11px] font-semibold uppercase tracking-[1px] text-[var(--text-accent)] mb-4">Simple by design</div>
-        <h2 className="text-[clamp(24px,4vw,36px)] font-semibold tracking-[-0.5px] text-[var(--text-primary)] mb-[60px]">
-          Up and running in 30 seconds
-        </h2>
+      {/* Visily 6-Card Grid Layout Structure */}
+      <section id="features" className="py-20 px-6 max-w-[1200px] mx-auto text-center">
+        <div className="mb-14">
+          <h2 className="text-[28px] md:text-[34px] font-extrabold tracking-tight text-[#FFFFFF] mb-3">
+            Everything you need to build faster
+          </h2>
+          <p className="text-[14px] text-[#8F91A2] max-w-[460px] mx-auto">
+            Powerful features strictly mapped to your developer workflow without any complex bloat.
+          </p>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-2">
+        {/* Using 4 original points inside mockup card layout for exact match */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-4 max-w-[1000px] mx-auto">
           {[
             {
-              icon: <Github className="h-[18px] w-[18px] text-[var(--text-accent)]" />,
+              icon: <Search className="h-5 w-5 text-[#C084FC]" />,
+              title: "Universal search",
+              desc: "⌘K search across every note, code block, and tag. Results link directly to the exact block.",
+            },
+            {
+              icon: <Code2 className="h-5 w-5 text-[#818CF8]" />,
+              title: "Code-first blocks",
+              desc: "Every code block has syntax highlighting, a language selector, and a one-click copy button.",
+            },
+            {
+              icon: <GitBranch className="h-5 w-5 text-[#34D399]" />,
+              title: "GitHub sync",
+              desc: "Notes are stored as readable Markdown in your own private repo. No lock-in, ever.",
+            },
+            {
+              icon: <Zap className="h-5 w-5 text-[#FBBF24]" />,
+              title: "Works offline",
+              desc: "Everything is stored locally first. GitHub sync happens in the background when you're connected.",
+            },
+          ].map((feature) => (
+            <article key={feature.title} className="bg-[#0A0A0E] border border-[#1C1C24] rounded-2xl p-6 text-left hover:border-[#3C3C4A] transition-colors shadow-sm">
+              <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-[#12121C] border border-[#1C1C24] mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-[15px] font-bold text-[#FFFFFF] mb-2">{feature.title}</h3>
+              <p className="text-[13px] leading-[1.6] text-[#8F91A2]">{feature.desc}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Visily "How it Works" Connected timeline Section */}
+      <section id="how-it-works" className="py-24 px-6 max-w-[1100px] mx-auto text-center">
+        <div className="mb-16">
+          <span className="text-[11px] font-bold text-[#8B5CF6] uppercase tracking-wider mb-2 block">Simple by design</span>
+          <h2 className="text-[28px] md:text-[34px] font-extrabold tracking-tight text-[#FFFFFF]">
+            Up and running in 30 seconds
+          </h2>
+        </div>
+
+        <div className="relative flex flex-col md:flex-row items-start justify-between gap-12 md:gap-6">
+          {/* Background connecting line dashed (desktop only) */}
+          <div className="absolute top-6 left-[15%] right-[15%] h-0 border-t border-dashed border-[#1C1C24] hidden md:block -z-10" />
+
+          {[
+            {
+              icon: <Github className="h-4 w-4 text-[#8B5CF6]" />,
               title: "Sign in with GitHub",
               desc: "One click. No forms, no email, no password. Your GitHub account is your DevVault account.",
               step: "01",
             },
             {
-              icon: <FileText className="h-[18px] w-[18px] text-[var(--text-accent)]" />,
+              icon: <FileText className="h-4 w-4 text-[#34D399]" />,
               title: "Write notes & snippets",
               desc: "Create structured notes with code blocks, headings, and paragraphs. Copy any snippet in one click.",
               step: "02",
             },
             {
-              icon: <RefreshCw className="h-[18px] w-[18px] text-[var(--text-accent)]" />,
+              icon: <RefreshCw className="h-4 w-4 text-[#FBBF24]" />,
               title: "Auto-syncs to your repo",
               desc: "Every note is saved as Markdown in your own private GitHub repo. Accessible from any device, always.",
               step: "03",
             },
-          ].map((step) => (
-            <article key={step.step} className="relative bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[var(--radius-xl)] p-8 text-left">
-              <span className="absolute top-5 right-5 text-[11px] font-semibold text-[var(--text-tertiary)] font-mono">{step.step}</span>
-              <div className="w-10 h-10 bg-[var(--accent-dim)] border border-[var(--accent-muted)] rounded-[var(--radius-lg)] flex items-center justify-center mb-5">{step.icon}</div>
-              <h3 className="text-[15px] font-semibold text-[var(--text-primary)] mb-2">{step.title}</h3>
-              <p className="text-[13px] leading-[1.65] text-[var(--text-secondary)]">{step.desc}</p>
+          ].map((item, i) => (
+            <article key={i} className="flex-1 flex flex-col items-center relative group">
+              {/* Node Circle */}
+              <div className="h-12 w-12 rounded-full bg-[#0A0A0E] border border-[#1C1C24] flex items-center justify-center text-[12px] font-extrabold text-[#FFFFFF] mb-5 relative group-hover:border-[#30303A] transition-colors shadow-sm">
+                {item.step}
+              </div>
+
+              {/* Optional Arrows on Desktop between nodes */}
+              {i < 2 && (
+                <div className="absolute top-5 right-[-15px] translate-x-1/2 text-[#1C1C24] hidden md:block">
+                  <svg width="20" height="12" viewBox="0 0 20 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 1L19 6L14 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M1 6H19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              )}
+
+              <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-[#0C0C12] border border-[#1C1C24] mb-4 text-[#FFFFFF]">
+                {item.icon}
+              </div>
+
+              <h3 className="text-[15px] font-bold text-[#FFFFFF] mb-2">{item.title}</h3>
+              <p className="text-[13px] leading-[1.6] text-[#8F91A2] max-w-[260px]">{item.desc}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section
-        id="features"
-        className="py-[100px] px-6 max-w-[1000px] mx-auto"
-        style={{ animation: "fadeUp 500ms 620ms ease both" }}
-      >
-        <div className="text-center mb-[60px]">
-          <div className="text-[11px] font-semibold uppercase tracking-[1px] text-[var(--text-accent)] mb-4">Built for developers</div>
-          <h2 className="text-[clamp(24px,4vw,36px)] font-semibold tracking-[-0.5px] text-[var(--text-primary)]">
-            Everything you need, nothing you don&apos;t
-          </h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-2">
-          {[
-            {
-              icon: <Search className="h-5 w-5 text-[var(--text-accent)]" />,
-              title: "Universal search",
-              desc: "⌘K search across every note, code block, and tag. Results link directly to the exact block.",
-            },
-            {
-              icon: <Code2 className="h-5 w-5 text-[var(--text-accent)]" />,
-              title: "Code-first blocks",
-              desc: "Every code block has syntax highlighting, a language selector, and a one-click copy button.",
-            },
-            {
-              icon: <GitBranch className="h-5 w-5 text-[var(--text-accent)]" />,
-              title: "GitHub sync",
-              desc: "Notes are stored as readable Markdown in your own private repo. No lock-in, ever.",
-            },
-            {
-              icon: <Zap className="h-5 w-5 text-[var(--text-accent)]" />,
-              title: "Works offline",
-              desc: "Everything is stored locally first. GitHub sync happens in the background when you're connected.",
-            },
-          ].map((feature) => (
-            <article key={feature.title} className="bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-[var(--radius-xl)] p-7">
-              {feature.icon}
-              <h3 className="mt-4 text-[14px] font-semibold text-[var(--text-primary)] mb-2">{feature.title}</h3>
-              <p className="text-[13px] leading-[1.65] text-[var(--text-secondary)]">{feature.desc}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section
-        className="py-[100px] px-6 text-center"
-        style={{ animation: "fadeUp 500ms 720ms ease both" }}
-      >
-        <div className="max-w-[560px] mx-auto bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-xl)] px-10 py-14 relative overflow-hidden">
-          <div
-            aria-hidden
-            className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-[300px] h-[200px]"
-            style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%)" }}
-          />
-          <h3 className="relative text-2xl font-semibold tracking-[-0.3px] text-[var(--text-primary)] mb-3">
-            Start building your knowledge OS
+      {/* Visily Bottom CTA Section */}
+      <section className="py-24 px-6 text-center">
+        <div className="max-w-[1200px] mx-auto flex flex-col items-center">
+          <h3 className="text-[28px] md:text-[34px] font-extrabold tracking-tight text-[#FFFFFF] mb-3">
+            Ready to supercharge your developer workflow?
           </h3>
-          <p className="relative text-[14px] text-[var(--text-secondary)] mb-7">
-            Free forever. Your data, your GitHub, your rules.
+          <p className="text-[14px] text-[#8F91A2] max-w-[420px] mb-8">
+            Start building your knowledge OS today. Free forever.
           </p>
-          <button
-            onClick={() => signIn("github", { callbackUrl: "/app" })}
-            className="relative h-11 px-7 bg-[var(--accent-primary)] rounded-[var(--radius-md)] text-[14px] font-semibold text-white inline-flex items-center gap-2.5 hover:bg-[var(--accent-bright)] whitespace-nowrap"
-          >
-            <Github className="h-[18px] w-[18px]" />
-            Sign in with GitHub — it&apos;s free
-          </button>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <button
+              onClick={() => signIn("github", { callbackUrl: "/app" })}
+              className="h-11 px-8 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-full text-[14px] font-bold text-white transition-all shadow-[0_0_24px_rgba(139,92,246,0.2)]"
+            >
+              Start Your Free Vault
+            </button>
+          </div>
         </div>
       </section>
 
-      <footer
-        className="border-t border-[var(--border-subtle)]"
-        style={{ animation: "fadeUp 500ms 820ms ease both" }}
-      >
-        <div className="max-w-[1100px] mx-auto px-6 py-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+      {/* Visily Layout Footer */}
+      <footer className="border-t border-[#1C1C24] bg-[#050508] py-12">
+        <div className="max-w-[1200px] mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div>
-            <div className="flex items-center gap-2">
-              <Vault className="h-5 w-5 text-[var(--accent-primary)]" />
-              <span className="text-[13px] font-semibold text-[var(--text-primary)]">DevVault</span>
+            <div className="flex items-center gap-2 mb-3">
+              <Vault className="h-6 w-6 text-[#8B5CF6]" />
+              <span className="text-[15px] font-bold">DevVault</span>
             </div>
-            <p className="text-[12px] text-[var(--text-tertiary)] mt-2">Your notes. Your GitHub. Your rules.</p>
+            <p className="text-[12px] text-[#6F7182] leading-relaxed">Your notes. Your GitHub.<br />Your rules.</p>
           </div>
-          <div className="flex items-center gap-5 text-[12px] text-[var(--text-tertiary)]">
-            <a className="hover:text-[var(--text-secondary)] inline-flex items-center gap-1" href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer">
-              GitHub <ExternalLink className="h-3 w-3" />
-            </a>
-            <span className="hover:text-[var(--text-secondary)]">Made by Abhishek</span>
+
+          <div className="space-y-3 text-[13px] font-medium text-[#8F91A2]">
+            <div className="font-bold text-[#FFFFFF] text-[12px] uppercase tracking-wider mb-1">Product</div>
+            <a href="#features" className="block hover:text-white transition-colors">Features</a>
+            <a href="#how-it-works" className="block hover:text-white transition-colors">How it works</a>
           </div>
+
+          <div className="space-y-3 text-[13px] font-medium text-[#8F91A2]">
+            <div className="font-bold text-[#FFFFFF] text-[12px] uppercase tracking-wider mb-1">Resources</div>
+            <Link href="/docs" className="block hover:text-white transition-colors">Documentation</Link>
+            <a href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer" className="block hover:text-white transition-colors">GitHub</a>
+          </div>
+        </div>
+
+        <div className="max-w-[1200px] mx-auto px-6 mt-12 pt-6 border-t border-[#1C1C24] flex items-center justify-between text-[12px] text-[#6F7182]">
+          <span>© 2026 DevVault. Made by Abhishek</span>
+          <a href="https://github.com/abhishek-data/Devvault" target="_blank" rel="noreferrer" className="hover:text-white inline-flex items-center gap-1 transition-colors">
+            GitHub <ExternalLink className="h-3 w-3" />
+          </a>
         </div>
       </footer>
     </div>
