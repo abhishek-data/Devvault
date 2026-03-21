@@ -16,6 +16,7 @@ export function noteToMarkdown(note: Note): string {
     if (note.noteType && note.noteType !== "note") frontmatter.noteType = note.noteType;
     if (note.isPinned) frontmatter.isPinned = true;
     if (note.isArchived) frontmatter.isArchived = true;
+    if (note.readingStatus && note.readingStatus !== "unread") frontmatter.readingStatus = note.readingStatus;
 
     const lines: string[] = [];
 
@@ -178,5 +179,6 @@ export function markdownToNote(markdown: string, sha: string): Note {
         noteType: data.noteType || "note",
         isPinned: data.isPinned || false,
         isArchived: data.isArchived || false,
+        readingStatus: data.readingStatus || "unread",
     };
 }

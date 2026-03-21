@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Note, Folder, NoteType, SearchIndexEntry, ConflictData } from "./types";
+import type { Note, Folder, NoteType, ReadingStatus, SearchIndexEntry, ConflictData } from "./types";
 import { StorageService } from "./db/storage";
 import { buildSearchIndex } from "./search/index";
 import { syncQueue } from "./sync/queue";
@@ -34,6 +34,7 @@ interface DevVaultStore {
     archiveNote: (noteId: string) => Promise<void>;
     restoreNote: (noteId: string) => Promise<void>;
     moveNoteToFolder: (noteId: string, folderId: string | undefined) => Promise<void>;
+    setReadingStatus: (noteId: string, status: ReadingStatus) => Promise<void>;
 
     // Search
     searchIndex: SearchIndexEntry[];
@@ -159,6 +160,10 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
     },
     moveNoteToFolder: async (noteId, folderId) => {
         const updated = await StorageService.moveNoteToFolder(noteId, folderId);
+        if (updated) get().upsertNote(updated);
+    },
+    setReadingStatus: async (noteId, status) => {
+        const updated = await StorageService.setReadingStatus(noteId, status);
         if (updated) get().upsertNote(updated);
     },
 

@@ -4,6 +4,8 @@ export type BlockType = "paragraph" | "heading" | "code" | "divider" | "link";
 
 export type NoteType = "note" | "snippet" | "bookmark" | "reference";
 
+export type ReadingStatus = "unread" | "reading" | "done";
+
 export interface Folder {
     id: string;
     name: string;
@@ -67,6 +69,7 @@ export interface Note {
     noteType?: NoteType;
     isPinned?: boolean;
     isArchived?: boolean;
+    readingStatus?: ReadingStatus;
 }
 
 export interface SearchIndexEntry {

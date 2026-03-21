@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDevVaultStore } from "@/lib/store";
 import { StorageService } from "@/lib/db/storage";
-import { Plus, Vault, Archive, Inbox, ChevronRight, FolderClosed, Filter } from "lucide-react";
+import { Plus, Vault, Archive, Inbox, ChevronRight, FolderClosed, Filter, BookOpen } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useRouter } from "next/navigation";
 import type { Note, NoteType } from "@/lib/types";
@@ -95,6 +95,14 @@ export function Sidebar() {
         >
           <Inbox className="h-3.5 w-3.5" />
           All Notes
+        </button>
+
+        <button
+          onClick={() => router.push("/app/references")}
+          className="w-full flex items-center gap-2 px-2 h-7 rounded-[var(--radius-sm)] text-[12px] text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] transition-colors"
+        >
+          <BookOpen className="h-3.5 w-3.5" />
+          References
         </button>
 
         <button

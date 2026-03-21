@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { useDevVaultStore } from "@/lib/store";
 import { StorageService } from "@/lib/db/storage";
 import { BlockEditor } from "@/components/editor/BlockEditor";
-import type { Note, NoteType, LinkBlock } from "@/lib/types";
-import { X, Loader2, Vault, Pin, PinOff, Archive, FolderOpen, FileText, Code2, Bookmark, BookOpen, ChevronDown } from "lucide-react";
+import type { Note, NoteType, ReadingStatus, LinkBlock } from "@/lib/types";
+import { X, Loader2, Vault, Pin, PinOff, Archive, FolderOpen, FileText, Code2, Bookmark, BookOpen, ChevronDown, Circle, BookMarked, CheckCircle2 } from "lucide-react";
 import { LinkCard } from "@/components/capture/LinkCard";
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ export default function NotePage() {
   const params = useParams();
   const router = useRouter();
   const noteId = params.noteId as string;
-  const { setActiveNote, upsertNote, rebuildSearchIndex, isGitHubConnected, folders, toggleNotePin, archiveNote, moveNoteToFolder } =
+  const { setActiveNote, upsertNote, rebuildSearchIndex, isGitHubConnected, folders, toggleNotePin, archiveNote, moveNoteToFolder, setReadingStatus } =
     useDevVaultStore();
   const [note, setNote] = useState<Note | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,6 +126,12 @@ export default function NotePage() {
     if (!note) return;
     await archiveNote(note.id);
     router.push("/app");
+  };
+
+  const handleReadingStatus = async (status: ReadingStatus) => {
+    if (!note) return;
+    await setReadingStatus(note.id, status);
+    setNote({ ...note, readingStatus: status });
   };
 
   const handleRemoveLinkBlock = async (blockId: string) => {
@@ -259,6 +265,36 @@ export default function NotePage() {
                 </>
               )}
             </div>
+
+            {/* Reading status (bookmark/reference only) */}
+            {(note.noteType === "bookmark" || note.noteType === "reference") && (
+              <div className="flex items-center h-7 bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-md)] overflow-hidden">
+                {([
+                  { s: "unread" as ReadingStatus, icon: <Circle className="h-3 w-3" />, label: "Unread" },
+                  { s: "reading" as ReadingStatus, icon: <BookMarked className="h-3 w-3" />, label: "Reading" },
+                  { s: "done" as ReadingStatus, icon: <CheckCircle2 className="h-3 w-3" />, label: "Done" },
+                ]).map((item) => (
+                  <button
+                    key={item.s}
+                    onClick={() => handleReadingStatus(item.s)}
+                    className={cn(
+                      "h-full px-2 text-[10px] font-semibold inline-flex items-center gap-1 transition-colors",
+                      (note.readingStatus || "unread") === item.s
+                        ? item.s === "done"
+                          ? "bg-[var(--green)]/15 text-[var(--green)]"
+                          : item.s === "reading"
+                            ? "bg-[var(--sync-pending)]/15 text-[var(--sync-pending)]"
+                            : "bg-[var(--bg-overlay)] text-[var(--text-secondary)]"
+                        : "text-[var(--text-tertiary)] hover:bg-[var(--bg-overlay)]"
+                    )}
+                    title={item.label}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             {/* Pin toggle */}
             <button
