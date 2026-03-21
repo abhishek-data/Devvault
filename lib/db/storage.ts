@@ -1,5 +1,5 @@
 import { db } from "./schema";
-import type { Note, Folder, SyncStatus } from "../types";
+import type { Note, Folder, SyncStatus, ReadingStatus } from "../types";
 
 export const StorageService = {
     // ── Notes ──────────────────────────────────────────────
@@ -89,6 +89,21 @@ export const StorageService = {
         note.updatedAt = new Date().toISOString();
         if (note.syncStatus === "synced") note.syncStatus = "pending";
         await db.notes.put(note);
+    },
+
+    async setReadingStatus(noteId: string, status: ReadingStatus): Promise<Note | undefined> {
+        const note = await db.notes.get(noteId);
+        if (!note) return undefined;
+        note.readingStatus = status;
+        note.updatedAt = new Date().toISOString();
+        if (note.syncStatus === "synced") note.syncStatus = "pending";
+        await db.notes.put(note);
+        return note;
+    },
+
+    async getBookmarksAndReferences(): Promise<Note[]> {
+        const all = await db.notes.orderBy("updatedAt").reverse().toArray();
+        return all.filter((n) => !n.isArchived && (n.noteType === "bookmark" || n.noteType === "reference"));
     },
 
     // ── Folders ────────────────────────────────────────────
