@@ -5,11 +5,11 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "DevVault",
     short_name: "DevVault",
     description:
-      "Store notes and code snippets locally. Sync to your own GitHub repo. Free forever.",
-    start_url: "/",
+      "Your developer knowledge OS — local-first, GitHub-synced. Store notes, code snippets, and bookmarks.",
+    start_url: "/app",
     display: "standalone",
-    background_color: "#080810",
-    theme_color: "#080810",
+    background_color: "#1A1A1E",
+    theme_color: "#1A1A1E",
     icons: [
       {
         src: "/favicon.svg",
@@ -17,5 +17,14 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/svg+xml",
       },
     ],
+    share_target: {
+      action: "/app/share",
+      method: "GET",
+      params: {
+        title: "title",
+        text: "text",
+        url: "url",
+      },
+    },
   };
 }
