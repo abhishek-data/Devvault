@@ -45,19 +45,57 @@ export async function POST(request: NextRequest) {
         const path = `notes/${note.id}.md`;
 
         if (action === "delete") {
-            if (!note.githubSha) {
-                return NextResponse.json(
-                    { error: "No SHA for delete" },
-                    { status: 400 }
-                );
+            try {
+                // Get the latest SHA in case local is stale
+                let sha = note.githubSha;
+                if (!sha) {
+                    try {
+                        const existing = await octokit.rest.repos.getContent({
+                            owner,
+                            repo: "devvault-notes",
+                            path,
+                        });
+                        if ("sha" in existing.data) {
+                            sha = existing.data.sha;
+                        }
+                    } catch {
+                        // File doesn't exist on GitHub — already deleted
+                        return NextResponse.json({ deleted: true });
+                    }
+                }
+
+                await octokit.rest.repos.deleteFile({
+                    owner,
+                    repo: "devvault-notes",
+                    path,
+                    message: `Delete ${note.title}`,
+                    sha: sha!,
+                });
+            } catch (deleteError: any) {
+                if (deleteError.status === 404 || deleteError.status === 409) {
+                    // File already gone or SHA mismatch — try with fresh SHA
+                    try {
+                        const existing = await octokit.rest.repos.getContent({
+                            owner,
+                            repo: "devvault-notes",
+                            path,
+                        });
+                        if ("sha" in existing.data) {
+                            await octokit.rest.repos.deleteFile({
+                                owner,
+                                repo: "devvault-notes",
+                                path,
+                                message: `Delete ${note.title}`,
+                                sha: existing.data.sha,
+                            });
+                        }
+                    } catch {
+                        // File truly doesn't exist — that's fine
+                    }
+                } else {
+                    throw deleteError;
+                }
             }
-            await octokit.rest.repos.deleteFile({
-                owner,
-                repo: "devvault-notes",
-                path,
-                message: `Delete ${note.title}`,
-                sha: note.githubSha,
-            });
             return NextResponse.json({ deleted: true });
         }
 

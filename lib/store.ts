@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { Note, Folder, NoteType, SearchIndexEntry, ConflictData } from "./types";
 import { StorageService } from "./db/storage";
 import { buildSearchIndex } from "./search/index";
+import { syncQueue } from "./sync/queue";
 
 interface DevVaultStore {
     // Notes
@@ -28,6 +29,7 @@ interface DevVaultStore {
     setShowArchive: (val: boolean) => void;
 
     // Note actions
+    deleteNoteWithSync: (noteId: string) => Promise<void>;
     toggleNotePin: (noteId: string) => Promise<void>;
     archiveNote: (noteId: string) => Promise<void>;
     restoreNote: (noteId: string) => Promise<void>;
@@ -128,6 +130,15 @@ export const useDevVaultStore = create<DevVaultStore>((set, get) => ({
     setShowArchive: (val) => set({ showArchive: val, activeFolderId: val ? null : get().activeFolderId }),
 
     // Note actions
+    deleteNoteWithSync: async (noteId) => {
+        const note = await StorageService.getNoteById(noteId);
+        if (note && note.githubSha && get().isGitHubConnected) {
+            syncQueue.addDelete(note);
+        }
+        await StorageService.deleteNote(noteId);
+        get().removeNote(noteId);
+        get().rebuildSearchIndex();
+    },
     toggleNotePin: async (noteId) => {
         const updated = await StorageService.togglePin(noteId);
         if (updated) get().upsertNote(updated);
