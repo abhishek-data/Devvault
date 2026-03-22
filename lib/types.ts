@@ -79,6 +79,10 @@ export interface SearchIndexEntry {
     blockType: string | null;
     snippet: string;
     tags: string[];
+    noteType?: NoteType;
+    folderId?: string;
+    readingStatus?: ReadingStatus;
+    domain?: string;
 }
 
 export interface ConflictData {
