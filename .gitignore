@@ -34,5 +34,9 @@ next-env.d.ts
 # next-agents-md
 .next-docs/
 
-# local docs
+# local docs (personal reference, not pushed)
 WALKTHROUGH.md
+CLAUDE-SETUP-GUIDE.md
+
+# claude local settings (personal, not shared)
+.claude
