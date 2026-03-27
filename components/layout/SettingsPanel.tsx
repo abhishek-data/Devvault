@@ -203,7 +203,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
               <div className="bg-[var(--bg-elevated)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-6 text-center shadow-sm">
                 <Github className="h-8 w-8 mx-auto mb-3 text-[var(--text-tertiary)]" />
                 <p className="text-[13px] text-[var(--text-secondary)] mb-4">You are currently operating in local-only mode.</p>
-                <button onClick={() => signIn("github", { callbackUrl: "/app" })} className="w-full h-10 bg-[var(--accent-muted)] hover:bg-[var(--accent-bright)] text-white rounded-[var(--radius-md)] text-[13px] font-semibold flex items-center justify-center gap-2 transition-colors">
+                <button onClick={() => signIn("github", { callbackUrl: "/app" })} className="w-full h-10 bg-[var(--accent-primary)] hover:bg-[var(--accent-bright)] text-[#000000] rounded-[var(--radius-md)] text-[13px] font-bold flex items-center justify-center gap-2 transition-colors">
                    <Github className="h-4 w-4" />
                    Sign in with GitHub
                 </button>
@@ -238,7 +238,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                   className={cn(
                      "h-9 rounded-[var(--radius-md)] text-[11px] font-bold uppercase tracking-wider transition-all",
                      syncIntervalMinutes === opt.value
-                       ? "bg-[var(--accent-muted)] text-white shadow-sm ring-2 ring-[var(--accent-primary)]/20"
+                       ? "bg-[var(--accent-primary)] text-[#000000] shadow-sm ring-2 ring-[var(--accent-primary)]/20"
                        : "bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                   )}
                 >
@@ -321,7 +321,7 @@ function AiSettingsSection() {
               className={cn(
                 "h-9 rounded-[var(--radius-md)] text-[12px] font-bold tracking-wide transition-all",
                 aiProvider === p
-                  ? "bg-[var(--accent-muted)] text-white shadow-sm ring-2 ring-[var(--accent-primary)]/20"
+                  ? "bg-[var(--accent-primary)] text-[#000000] shadow-sm ring-2 ring-[var(--accent-primary)]/20"
                   : "bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:border-[var(--border-strong)]"
               )}
             >
@@ -357,7 +357,7 @@ function AiSettingsSection() {
           </div>
           <button
             onClick={handleSaveKey}
-            className="h-9 px-3 bg-[var(--accent-muted)] hover:bg-[var(--accent-bright)] text-white rounded-[var(--radius-md)] text-[11px] font-bold transition-colors"
+            className="h-9 px-3 bg-[var(--accent-primary)] hover:bg-[var(--accent-bright)] text-[#000000] rounded-[var(--radius-md)] text-[11px] font-bold transition-colors"
           >
             Save
           </button>

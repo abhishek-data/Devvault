@@ -3,26 +3,26 @@
 @tailwind utilities;
 
 :root {
-  --bg-base: #1A1A1E;
-  --bg-surface: #1E1E24;
-  --bg-elevated: #26262D;
-  --bg-overlay: #2D2D36;
-  --bg-input: #1b1b21;
+  --bg-base: #0f0f11;
+  --bg-surface: #141418;
+  --bg-elevated: #1a1a1e;
+  --bg-overlay: #222228;
+  --bg-input: #141418;
 
-  --border-subtle: #2b2b36;
-  --border-default: #353540;
-  --border-strong: #4a4a58;
+  --border-subtle: #1e1e26;
+  --border-default: #27272a;
+  --border-strong: #3f3f46;
 
-  --accent-primary: #594E80;
-  --accent-bright: #685a94;
-  --accent-muted: #3a3255;
-  --accent-glow: rgba(89, 78, 128, 0.15);
-  --accent-dim: rgba(89, 78, 128, 0.08);
+  --accent-primary: #a7f3d0;
+  --accent-bright: #86efac;
+  --accent-muted: #065f46;
+  --accent-glow: rgba(167, 243, 208, 0.12);
+  --accent-dim: rgba(167, 243, 208, 0.06);
 
-  --text-primary: #f2f2f7;
+  --text-primary: #f4f4f5;
   --text-secondary: #a1a1aa;
   --text-tertiary: #52525b;
-  --text-accent: #a78bfa;
+  --text-accent: #a7f3d0;
 
   --green: #34d399;
   --yellow: #fbbf24;
@@ -34,7 +34,7 @@
   --sync-pending: var(--yellow);
   --sync-conflict: var(--red);
   --sync-offline: var(--orange);
-  --sync-local: #4a4a6a;
+  --sync-local: #3f3f46;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -47,14 +47,14 @@
   --space-12: 48px;
 
   --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
-  --radius-xl: 14px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
 
   --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
-  --header-bg: rgba(8, 8, 16, 0.85);
+  --header-bg: rgba(15, 15, 17, 0.85);
 }
 
 .light {

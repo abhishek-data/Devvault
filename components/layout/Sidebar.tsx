@@ -64,21 +64,23 @@ export function Sidebar() {
         "h-screen bg-[var(--bg-surface)] border-r border-[var(--border-subtle)] flex flex-col z-40 transition-all duration-200",
         sidebarCollapsed
           ? "w-0 min-w-0 md:w-0 md:min-w-0 overflow-hidden border-r-0"
-          : "w-[220px] min-w-[220px] lg:w-[240px] lg:min-w-[240px] fixed md:relative left-0 top-0 translate-x-0"
+          : "w-[240px] min-w-[240px] lg:w-[260px] lg:min-w-[260px] fixed md:relative left-0 top-0 translate-x-0"
       )}
     >
-      {/* Brand + New Note */}
-      <div className="h-14 flex items-center justify-between px-3 flex-shrink-0">
-        <div className="flex items-center gap-2">
-          <Vault className="h-5 w-5 text-[var(--accent-primary)]" />
-          <span className="text-[14px] font-bold text-[var(--text-primary)]">DevVault</span>
+      <div className="h-16 flex items-center px-5 mb-2">
+        <div className="flex items-center gap-2.5">
+          <Vault className="h-6 w-6 text-[var(--accent-primary)]" />
+          <span className="text-[15px] font-bold tracking-wide text-[var(--text-primary)]">DevVault</span>
         </div>
+      </div>
+
+      <div className="px-4 pb-4">
         <button
           onClick={handleNewNote}
-          className="h-7 w-7 flex items-center justify-center rounded-[var(--radius-md)] bg-[var(--accent-muted)] hover:bg-[var(--accent-bright)] text-white transition-colors"
-          title="New Note"
+          className="w-full h-[40px] bg-[var(--accent-primary)] rounded-[var(--radius-md)] text-[13px] font-bold text-[#000000] flex items-center justify-center gap-2 hover:bg-[var(--accent-bright)] transition-colors"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-[16px] w-[16px]" />
+          New Note
         </button>
       </div>
 

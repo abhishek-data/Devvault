@@ -163,7 +163,7 @@ export function SearchModal() {
         className="fixed top-[10%] sm:top-[14%] left-1/2 w-[580px] md:w-[640px] max-w-[calc(100vw-24px)] max-h-[70vh] sm:max-h-[520px] -translate-x-1/2 bg-[var(--bg-surface)] border border-[var(--border-strong)] rounded-[var(--radius-xl)] overflow-hidden shadow-2xl flex flex-col"
         style={{
           animation: "slideDown 180ms cubic-bezier(0.16,1,0.3,1)",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.3)",
+          boxShadow: "0 24px 64px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,243,208,0.15)",
         }}
       >
         {/* Search input */}
